@@ -4,6 +4,8 @@ format: html
 editor: visual
 ---
 
+
+
 # Atletico Madrid season 23/24 team performance analysis
 
 In the past thirteen years of La Liga, Atlético Madrid has been regarded as a strong title contender. Despite the dominance of Spain’s two traditional big clubs, Barcelona and Real Madrid, Los Colchoneros managed to break their monopoly and win the league title twice, they were seen this way because of their recent history in the league. The reason is that Atlético has been the only team to consistently challenge Real Madrid and Barcelona over the last decade. Since the 2014/15 season, Atlético Madrid’s league standings have never dropped below third place. However, in the 2023/24 season, their performance plummeted drastically, finishing fourth in the league.
@@ -14,9 +16,13 @@ The dataset used in this report, “La Liga 2023/24: Team & Player Stats,” is 
 
 # Background Information
 
+
+
 ```{r formation, echo=FALSE}
 knitr::include_graphics("ATM_formation.png")
 ```
+
+
 Before we uncover the truth behind Atlético Madrid’s data from last season, we must first understand their tactics. In the 2023/24 season, Atlético Madrid mostly adopted a 3-5-2 formation, featuring three defenders and five midfielders: two wing-backs, two versatile midfielders, and a defensive number 6. In attack, they utilized two forwards to pose a constant threat to the opposition’s defense. As the figure shown above.
 
 The 3-5-2 formation places five players in midfield, giving Atlético Madrid a numerical advantage in central areas during midfield battles. This setup allows them to flexibly apply pressure on opponents, with some midfielders pushing forward to press and create threats, while others drop back to assist with organization and support. Under heavy defensive pressure, the two wing-backs can drop back into position, forming a five-man defensive line. 
@@ -30,15 +36,23 @@ Compared to the common four-defender formations like 4-4-2, the 3-5-2 offers bet
 Additionally, the three center-backs facilitate better ball progression from the back. They are less vulnerable to pressure from opposing forwards. Atlético’s goalkeeper, Jan Oblak, does not act as a playmaker from the back. Beyond his goalkeeping duties, Oblak focuses on safely delivering the ball to the defenders at the edge of the penalty area, allowing them to initiate attacks and counterplays.
 While Atlético doesn’t employ a sweeper-keeper in a 3+2 build-up system with inverted full-backs or free roles, their backline typically involves 3+1 players during build-up play. This setup is sufficient to handle high pressing from opposition front threes effectively.
 
+
+
 ```{r matchscreenshot, echo=FALSE}
 knitr::include_graphics("MatchScreenShot.png")
 ```
 
+
+
 In this scenario, Atlético Madrid’s three defenders spread wide to provide width, while the number 6 drops deep to support as the organizing pivot. Typically, the central pivot in their midfield trio focuses on defensive tasks between the defensive line and midfield rather than initiating attacks. When the opposition applies high pressing, both wide center-backs are targeted, leaving the central center-back unmarked. The number 6 also drops back to receive the ball, creating a dilemma for the pressing player: pressing the central center-back leaves space behind to exploit, while tracking the pivot allows the wide center-back to pass back to the unpressured central defender, who can comfortably continue the build-up. This interplay effectively counters the opponent’s press, utilizing spatial advantages to retain control.
+
+
 
 ```{r tactic, echo=FALSE}
 knitr::include_graphics("Tactic.png")
 ```
+
+
 
 
 In the screenshot, we observe only four Atltico Madrid players in their half besides the defenders: one right wing-back and three central players, one of whom is a forward. This raises the question: where are the other midfielders and the left wing-back? And why is a forward, whose primary role is traditionally to score, positioned in midfield instead of the attacking third? This 2D diagram replicates the off-ball movements from an earlier match situation. The absence of the left wing-back and another midfielder suggests they are likely positioned higher up the pitch, possibly providing width and vertical depth in the attacking third. The forward dropping into midfield reflects tactical flexibility—likely to overload central areas, create passing lanes, or help progress the ball against an organized press. Such movements are characteristic of Atlético’s dynamic approach, where players frequently interchange roles to exploit spatial and numerical advantages during transitions.
@@ -50,9 +64,13 @@ Number 5, Rodrigo De Paul, who is adept at orchestrating the right-side attack o
 
 In Atletico Madrid’s setup, aside from the number 6 role, the other two midfielders frequently push forward depending on the situation. These midfielders adapt dynamically to exploit attacking opportunities, often making forward runs into advanced positions or supporting wide players. Their movement adds unpredictability and overloads specific areas of the pitch, creating threats through overlapping runs, combination play, or penetrating the opponent’s defensive lines. This flexibility is key to linking midfield with attack, maintaining fluidity, and ensuring the team can quickly transition between defense and offense.
 
+
+
 ```{r defense, echo=FALSE}
 knitr::include_graphics("Defense.png")
 ```
+
+
 
 When the opponent has possession, Atlético Madrid attempts a mid-block press. Due to their relatively high average squad age, they lack the ability to apply pressure in a high press. When their mid-block pressing proves ineffective, their wing-backs drop into full-back positions to form a 5-3-2 defensive shape. In extreme situations, Atlético Madrid pulled their deeper forward into a wide midfielder position, creating a 5-4-1 shape, with defenders retreating into the penalty area. Atlético Madrid is a staunch advocate of chain defense, frequently falling back into a low block during defensive play.
 
@@ -64,6 +82,8 @@ Although the data we have cannot fully reflect the players’ real-world perform
 # Data Exploration
 
 ## Team Performance
+
+
 
 ```{r xG vs. Goals Scored , echo=FALSE}
 # Load necessary libraries
@@ -108,7 +128,11 @@ scatter_plot <- ggplot(merged_data) +
 print(scatter_plot)
 ```
 
+
+
 From the graph above, we can see how Atlético Madrid’s performance in expected goals (xG) and actual goals scored compares to other top teams in the 2023/24 La Liga season. The blue dots represent the predicted total goals for the season, while the red dots indicate the actual goals scored by the end of the season, and the arrows show the difference between the two. Atlético Madrid’s actual goals exceeded their xG by +6.98, demonstrating decent attacking efficiency. However, this is still significantly behind Real Madrid (+17.24) and Girona (+13.18). Barcelona’s performance was close to their xG, but they scored a total of 79 goals throughout the season, which is lower than Girona’s 85 and Real Madrid’s 87. These three teams displayed exceptional scoring abilities, with Real Madrid and Girona significantly outperforming expectations.
+
+
 
 ```{r divergence-plot-xgconceded-vs-conceded, echo=FALSE}
 # Load necessary libraries
@@ -411,7 +435,4 @@ radarchart(radar_data,
 # Add a title
 title("Performance Comparison: Atlético Madrid vs Top 7 La Liga Clubs")
 ```
-
-
-
 
