@@ -23,7 +23,7 @@ The 3-5-2 formation places five players in midfield, giving Atlético Madrid a n
 
 The two wing-backs are undoubtedly key players, crucial to the team’s success on both ends of the pitch. Offensively, they push high up to provide width, stretch the opposition’s defense, create opportunities for crosses, and combine with midfielders and forwards. They also participate in build-up play, forming diverse attacking combinations with central players. Defensively, wing-backs quickly drop back to form a five-man backline, adding stability and covering wide spaces that opponents might exploit. Their ability to transition seamlessly between attack and defense is the cornerstone of the team’s tactical balance.
 
-If a wing-back underperforms, the attacking threat in their area diminishes, and poor positioning can be exploited by opponents. Given the demands of the role, wing-backs face strict physical requirements, needing to tirelessly shuttle up and down the flanks. When possession is lost, they must swiftly track back to defend; when their team holds the ball, they push forward to provide width. Atlético Madrid utilizes wing-backs differently depending on the flank: on the right, they often employ a natural-footed wing-back to stay wide and deliver crosses into the box, linking up with midfielders or forwards making runs. On the left, they tend to use an inverted wing-back, such as Yannick Carrasco in the 2022/23 season, who cuts inside to threaten the goal directly. During attacks, the left wing-back often advances to a position akin to a left winger, while defensively, they drop back into the five-man defensive line. This aggressive tactical approach places exceptionally high demands on players’ tactical awareness, technical ability, and fitness.
+If a wing-back underperforms, the attacking threat in their area diminishes, and poor positioning can be exploited by opponents. Given the demands of the role, wing-backs face strict physical requirements, needing to tirelessly shuttle up and down the flanks. When possession is lost, they must swiftly track back to defend; when their team holds the ball, they push forward to provide width. Atlético Madrid utilizes wing-backs differently depending on the flank: on the right, they often employ a natural-footed wing-back to stay wide and deliver crosses into the box, linking up with midfielders or forwards making runs. On the left, they tend to use wing-back that plays like an inverted winger in attack, such as Yannick Carrasco in the 2022/23 season, they cut inside to threaten the goal directly, and stay wide when the team has the ball. During attacks, the left wing-back often advances to a position akin to a left winger, while defensively, they drop back into the five-man defensive line. This aggressive tactical approach places exceptionally high demands on players’ tactical awareness, technical ability, and fitness.
 
 Compared to the common four-defender formations like 4-4-2, the 3-5-2 offers better solutions against teams playing with two forwards. In a 4-defender setup, the two center-backs are often left in 1v1 situations against the opposition’s forwards, whereas in a 3-defender system, the extra center-back creates a local 3v2 advantage in the penalty area. In a three-center-back system, the wide center-backs take up positions closer to the flanks, often acting more like full-backs to support the midfield. Atlético Madrid’s left wide center-back is more involved in the attacking build-up, frequently overlapping or making runs into the half-space to combine with the left wing-back, creating 2v1 situations. They also often carry the ball forward to initiate attacks. On the other hand, the right wide center-back adopts a more conservative role, maintaining the balance between attack and defense. Meanwhile, the central center-back focuses on dealing with through balls and covering the space behind the defensive line.
 
@@ -50,7 +50,16 @@ Number 5, Rodrigo De Paul, who is adept at orchestrating the right-side attack o
 
 In Atletico Madrid’s setup, aside from the number 6 role, the other two midfielders frequently push forward depending on the situation. These midfielders adapt dynamically to exploit attacking opportunities, often making forward runs into advanced positions or supporting wide players. Their movement adds unpredictability and overloads specific areas of the pitch, creating threats through overlapping runs, combination play, or penetrating the opponent’s defensive lines. This flexibility is key to linking midfield with attack, maintaining fluidity, and ensuring the team can quickly transition between defense and offense.
 
+```{r defense, echo=FALSE}
+knitr::include_graphics("Defense.png")
+```
 
+When the opponent has possession, Atlético Madrid attempts a mid-block press. Due to their relatively high average squad age, they lack the ability to apply pressure in a high press. When their mid-block pressing proves ineffective, their wing-backs drop into full-back positions to form a 5-3-2 defensive shape. In extreme situations, Atlético Madrid pulled their deeper forward into a wide midfielder position, creating a 5-4-1 shape, with defenders retreating into the penalty area. Atlético Madrid is a staunch advocate of chain defense, frequently falling back into a low block during defensive play.
+
+
+# Assumption
+
+Although the data we have cannot fully reflect the players’ real-world performances, I believe it still provides some valuable insights. Based on a preliminary understanding of how Atlético Madrid’s 3-5-2 formation operates, we hypothesize that their underwhelming performance this season is due to the following reasons: poor performances from the wing-backs, insufficient midfield control, ineffective ball progression into the attacking third, excessive wastefulness in front of goal, and defensive instability.
 
 # Data Exploration
 
@@ -166,98 +175,122 @@ print(goals_conceded_plot)
 
 ```
 
-```{r comparison GA and xGA, echo=FALSE}
+```{r Spider Chart, echo= FALSE}
 # Load necessary libraries
-library(ggplot2)
 library(dplyr)
-library(tidyr)
+library(fmsb)
 
-# Load the data
-laliga_xg <- read.csv("archive/Laliga_table_xg_2023_24.csv")
-laliga_table <- read.csv("archive/Laliga_table_2023_24.csv")
+# Load data from CSV files and calculate averages for each column
+pass_completion <- read.csv("archive/laliga2023_34/accurate_pass_team.csv") %>%
+  summarise(PassSuccess = mean(PassSuccess..., na.rm = TRUE))
 
-# Calculate xGA and prepare the data
-laliga_xg <- laliga_xg %>%
-  mutate(xGA = xg - xgConceded) %>%
-  select(name, xGA)
+goals_per_game <- read.csv("archive/laliga2023_34/team_goals_per_match.csv") %>%
+  summarise(GoalsPerMatch = mean(GoalsperMatch, na.rm = TRUE))
 
-# Merge with goalConDiff from Laliga_table_2023_24.csv
-comparison_data <- laliga_table %>%
-  select(name, goalConDiff) %>%
-  inner_join(laliga_xg, by = "name")
+expected_goals <- read.csv("archive/laliga2023_34/expected_goals_team.csv") %>%
+  summarise(ExpectedGoalsPerMatch = mean(ExpectedGoals / 38, na.rm = TRUE))
 
-# Reshape the data for the paired bar chart
-paired_data <- comparison_data %>%
-  pivot_longer(cols = c("xGA", "goalConDiff"), names_to = "Metric", values_to = "Value")
+possession <- read.csv("archive/laliga2023_34/possession_percentage_team.csv") %>%
+  summarise(Possession = mean(Possession, na.rm = TRUE))
 
-# Create the paired bar chart
-paired_bar_plot <- ggplot(paired_data, aes(x = reorder(name, -Value), y = Value, fill = Metric)) +
-  geom_bar(stat = "identity", position = "dodge", width = 0.7) +
-  labs(
-    title = "Paired Bar Chart: xGA vs. GoalConDiff",
-    subtitle = "Comparing Expected Goal Contribution and Goal Differential for Each Team",
-    x = "Team",
-    y = "Value",
-    fill = "Metric"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+goals_conceded <- read.csv("archive/laliga2023_34/goals_conceded_team_match.csv") %>%
+  summarise(GoalsConcededPerMatch = mean(GoalsConcededperMatch, na.rm = TRUE))
 
-# Display the plot
-print(paired_bar_plot)
+expected_goals_against <- read.csv("archive/laliga2023_34/expected_goals_conceded_team.csv") %>%
+  summarise(ExpectedGoalsConcededPerMatch = mean(ExpectedGoalsConceded / 38, na.rm = TRUE))
+
+tackle_won <- read.csv("archive/laliga2023_34/won_tackle_team.csv") %>%
+  summarise(TackleSuccess = mean(TackleSuccess..., na.rm = TRUE))
+
+# Combine all averages into one dataframe
+league_averages <- data.frame(
+  PassSuccess = pass_completion$PassSuccess,
+  GoalsPerMatch = goals_per_game$GoalsPerMatch,
+  ExpectedGoalsPerMatch = expected_goals$ExpectedGoalsPerMatch,
+  Possession = possession$Possession,
+  GoalsConcededPerMatch = goals_conceded$GoalsConcededPerMatch,
+  ExpectedGoalsConcededPerMatch = expected_goals_against$ExpectedGoalsConcededPerMatch,
+  TackleSuccess = tackle_won$TackleSuccess
+)
+
+# Load team performance data for Atlético Madrid
+team_performance <- read.csv("archive/laliga2023_34/accurate_pass_team.csv") %>%
+  select(Team, PassSuccess = PassSuccess...) %>%
+  inner_join(read.csv("archive/laliga2023_34/team_goals_per_match.csv") %>%
+               select(Team, GoalsPerMatch = GoalsperMatch), by = "Team") %>%
+  inner_join(read.csv("archive/laliga2023_34/expected_goals_team.csv") %>%
+               mutate(ExpectedGoalsPerMatch = ExpectedGoals / 38) %>%
+               select(Team, ExpectedGoalsPerMatch), by = "Team") %>%
+  inner_join(read.csv("archive/laliga2023_34/possession_percentage_team.csv") %>%
+               select(Team, Possession = Possession), by = "Team") %>%
+  inner_join(read.csv("archive/laliga2023_34/goals_conceded_team_match.csv") %>%
+               select(Team, GoalsConcededPerMatch = GoalsConcededperMatch), by = "Team") %>%
+  inner_join(read.csv("archive/laliga2023_34/expected_goals_conceded_team.csv") %>%
+               mutate(ExpectedGoalsConcededPerMatch = ExpectedGoalsConceded / 38) %>%
+               select(Team, ExpectedGoalsConcededPerMatch), by = "Team") %>%
+  inner_join(read.csv("archive/laliga2023_34/won_tackle_team.csv") %>%
+               select(Team, TackleSuccess = TackleSuccess...), by = "Team") %>%
+  filter(Team == "Atletico Madrid") %>%
+  select(-Team) %>%
+  as.data.frame()
+# Correct maximum values for radar chart scaling
+max_values <- data.frame(
+  PassSuccess = 90,
+  GoalsPerMatch = 3,
+  ExpectedGoalsPerMatch = 3,
+  Possession = 75,
+  GoalsConcededPerMatch = 3,
+  ExpectedGoalsConcededPerMatch = 3,
+  TackleSuccess = 90
+)
+
+# Minimum values for radar chart
+min_values <- data.frame(
+  PassSuccess = 0,
+  GoalsPerMatch = 0,
+  ExpectedGoalsPerMatch = 0,
+  Possession = 0,
+  GoalsConcededPerMatch = 0,
+  ExpectedGoalsConcededPerMatch = 0,
+  TackleSuccess = 0
+)
+
+# Combine max, min, and data for the radar chart
+radar_data <- rbind(max_values, min_values, league_averages, team_performance)
+
+# Ensure column names match for radar chart processing
+colnames(radar_data) <- colnames(max_values)
+
+# Create the radar chart
+library(fmsb)
+radarchart(
+  radar_data,
+  axistype = 1,
+  pcol = c(rgb(1, 0, 0, 0.9), rgb(0.2, 0.8, 0.2, 0.9)),  # Red for league average, green for Atlético Madrid
+  pfcol = c(rgb(1, 0, 0, 0.4), rgb(0.2, 0.8, 0.2, 0.4)),  # Semi-transparent fill
+  plwd = 2,
+  cglcol = "grey",
+  cglty = 1,
+  axislabcol = "grey",
+  caxislabels = seq(0, 100, 25),
+  cglwd = 0.8,
+  vlcex = 0.8
+)
+
+# Add a legend
+legend(
+  "topright",
+  legend = c("League Average", "Atlético Madrid"),
+  col = c(rgb(1, 0, 0, 0.9), rgb(0.2, 0.8, 0.2, 0.9)),
+  pch = 15,
+  bty = "n",
+  pt.cex = 1.5
+)
+
+# Add a title
+title("General Performance Comparison: Atlético Madrid vs League Average")
+
 
 ```
 
-```{r table conceded, echo=FALSE}
-library(dplyr)
-library(tidyr)
-library(knitr)
 
-# Load the La Liga data
-laliga_table <- read.csv("archive/Laliga_table_2023_24.csv")
-
-# Extract goalsConceded from scoresStr
-laliga_table <- laliga_table %>%
-  separate(scoresStr, into = c("goalsScored", "goalsConceded"), sep = "-", convert = TRUE)
-
-# Ensure 'goalsConceded' is numeric
-laliga_table <- laliga_table %>%
-  mutate(goalsConceded = as.numeric(goalsConceded))
-
-# Calculate summary statistics
-summary_stats <- laliga_table %>%
-  summarize(
-    number_of_teams = n(),
-    min_goals_conceded = min(goalsConceded, na.rm = TRUE),
-    Q1 = quantile(goalsConceded, 0.25, na.rm = TRUE),
-    median = median(goalsConceded, na.rm = TRUE),
-    Q3 = quantile(goalsConceded, 0.75, na.rm = TRUE),
-    max_goals_conceded = max(goalsConceded, na.rm = TRUE),
-    MAD = mean(abs(goalsConceded - mean(goalsConceded, na.rm = TRUE)), na.rm = TRUE), # Mean Absolute Deviation
-    SAM = sum(abs(goalsConceded - mean(goalsConceded, na.rm = TRUE)), na.rm = TRUE), # Sum of Absolute Deviations
-    SASD = sum((goalsConceded - mean(goalsConceded, na.rm = TRUE))^2, na.rm = TRUE)  # Sum of Squared Deviations
-  )
-
-# Find Atlético Madrid's stats
-atletico_stats <- laliga_table %>%
-  filter(name == "Atletico Madrid") %>%
-  select(name, goalsConceded)
-
-# Compare Atlético Madrid's goalsConceded against summary statistics
-comparison <- summary_stats %>%
-  mutate(
-    Atletico_GoalsConceded = atletico_stats$goalsConceded
-  )
-
-# Display the comparison table
-comparison %>%
-  t() %>% # Transpose for better readability
-  as.data.frame() %>%
-  rename(Value = V1) %>% # Rename the column for clarity
-  knitr::kable(
-    col.names = c("Metric", "Value"),
-    caption = "Summary Statistics and Atlético Madrid's Performance",
-    format = "pipe"
-  )
-
-```
