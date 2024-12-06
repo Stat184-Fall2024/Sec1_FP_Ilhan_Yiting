@@ -117,27 +117,36 @@ library(tidyr)
 laliga_xg <- read.csv("archive/Laliga_table_xg_2023_24.csv")
 laliga_table <- read.csv("archive/Laliga_table_2023_24.csv")
 
-# Prepare the data
+# Prepare the La Liga table data
 laliga_table <- laliga_table %>%
-  separate(scoresStr, into = c("goalsScored", "goalsConceded"), sep = "-", convert = TRUE) # Extract actual goals conceded
+  separate(scoresStr, into = c("goalsScored", "goalsConceded"), sep = "-", convert = TRUE) # Extract actual goals scored and conceded
 
+# Get the top 7 teams based on points
+top_teams <- laliga_table %>%
+  arrange(desc(pts)) %>% # Sort by points in descending order
+  mutate(rank = row_number()) %>% # Assign rank based on points
+  slice(1:7) # Select the top 7 teams
+
+# Merge the xG data with the top 7 teams
 merged_data <- laliga_xg %>%
-  inner_join(laliga_table, by = c("name", "played")) %>%
-  filter(idx.x <= 6) %>% # Filter top 6 teams (if needed)
-  mutate(conceded_diff = xgConceded - as.numeric(goalsConceded)) # Calculate the difference
+  inner_join(top_teams, by = c("name", "played")) %>% # Merge on team name and matches played
+  mutate(
+    name_with_rank = paste0(rank, ". ", name), # Combine rank with team name
+    conceded_diff = xgConceded - as.numeric(goalsConceded) # Calculate difference between xGConceded and actual goals conceded
+  )
 
-# Divergence plot for xGConceded vs. Goals Conceded
-divergence_plot <- ggplot(merged_data, aes(x = reorder(name, conceded_diff), y = conceded_diff, fill = conceded_diff > 0)) +
+# Create the divergence plot for xGConceded vs. Goals Conceded
+divergence_plot <- ggplot(merged_data, aes(x = reorder(name_with_rank, conceded_diff), y = conceded_diff, fill = conceded_diff > 0)) +
   geom_bar(stat = "identity", width = 0.6) +
   geom_text(aes(label = round(conceded_diff, 2)), vjust = ifelse(merged_data$conceded_diff > 0, -0.5, 1.5), size = 3) +
   scale_fill_manual(
-    values = c(`TRUE` = "blue", `FALSE` = "red"),  # Correctly formatted logical values
+    values = c(`TRUE` = "blue", `FALSE` = "red"),
     labels = c("Underperformance", "Overperformance")
   ) +
   labs(
     title = "Divergence Plot: xGConceded vs. Actual Goals Conceded",
     subtitle = "Difference between Expected Goals Conceded (xGConceded) and Actual Goals Conceded",
-    x = "Team",
+    x = "Team (Ranked by Points)",
     y = "Difference (xGConceded - Goals Conceded)",
     fill = "Performance"
   ) +
@@ -148,29 +157,10 @@ divergence_plot <- ggplot(merged_data, aes(x = reorder(name, conceded_diff), y =
 print(divergence_plot)
 ```
 
-```{r plot for goal conceded, echo=FALSE}
-# Prepare the data
-laliga_table <- laliga_table %>%
-  mutate(goalsConceded = as.numeric(goalsConceded)) # Ensure 'goalsConceded' is numeric
+The chart above aims to compare the difference between the season’s expected goals conceded (as predicted by the media) and the actual goals conceded. Blue indicates teams that conceded fewer goals than predicted, while red represents teams that underperformed expectations. As shown, Real Madrid performed exceptionally well this season, which is why they secured the league title four rounds early, claiming their 36th La Liga championship. Girona emerged as the dark horse of the season, far exceeding expectations. In the 2022/23 season, they finished 10th, but in 2023/24, they climbed to 3rd place in the league. Since the 2014/15 season, La Liga’s top three spots had been dominated by Real Madrid, Barcelona, or Atlético Madrid, making Girona the only club to break this record. Barcelona’s defense struggled with severe injuries, as key defenders Araújo and left-back Balde were sidelined for extended periods, leading to inconsistent defensive performances. Athletic Bilbao and Real Sociedad secured Europa League spots, conceding fewer goals than the media predicted.
 
-# Create a bar plot for goals conceded, sorted from high to low
-goals_conceded_plot <- ggplot(laliga_table, aes(x = reorder(name, -goalsConceded), y = goalsConceded, fill = goalsConceded)) +
-  geom_bar(stat = "identity", width = 0.7) +
-  geom_text(aes(label = goalsConceded), vjust = -0.5, size = 3.5) + # Add text labels on top of the bars
-  scale_fill_gradient(low = "blue", high = "red") + # Color gradient based on goals conceded
-  labs(
-    title = "Total Goals Conceded by Each Club (High to Low)",
-    x = "Club",
-    y = "Goals Conceded",
-    fill = "Goals Conceded"
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+Atlético Madrid finished fourth, earning a Champions League berth for next season. Traditionally seen as a defensively solid team, Atlético has lost its once-formidable defense with the departures or retirements of key players like Gabi, Diego Godín, Miranda, Juanfran, and Filipe Luís, Colchoneros has left behind their once-solid defensive line and their fearsome defensive tactics that intimidated all of Europe big clubs at their now-demolished old stadium, the Calderón. Head coach Diego Simeone has also been criticized for his conservative tactics and began transitioning the team from his renowned 4-4-2 formation to a 3-5-2 starting in the 2022/23 season. However, the current squad has yet to fully adapt to this system. During the 2023/24 summer transfer window, Atlético failed to make any major defensive signings. Key defender Giménez played only 1,323 minutes throughout the season, and Witsel, brought in as reinforcement, has not returned to his pre-injury form. These factors collectively offer a partial explanation for Atlético’s defensive struggles this season.
 
-# Display the bar plot
-print(goals_conceded_plot)
-
-```
 
 ```{r Spider Chart, echo= FALSE}
 # Load necessary libraries
@@ -230,115 +220,7 @@ team_performance <- read.csv("archive/laliga2023_34/accurate_pass_team.csv") %>%
   filter(Team == "Atletico Madrid") %>%
   select(-Team) %>%
   as.data.frame()
-# Correct maximum values for radar chart scaling
-max_values <- data.frame(
-  PassSuccess = 90,
-  GoalsPerMatch = 3,
-  ExpectedGoalsPerMatch = 3,
-  Possession = 75,
-  GoalsConcededPerMatch = 3,
-  ExpectedGoalsConcededPerMatch = 3,
-  TackleSuccess = 90
-)
 
-# Minimum values for radar chart
-min_values <- data.frame(
-  PassSuccess = 0,
-  GoalsPerMatch = 0,
-  ExpectedGoalsPerMatch = 0,
-  Possession = 0,
-  GoalsConcededPerMatch = 0,
-  ExpectedGoalsConcededPerMatch = 0,
-  TackleSuccess = 0
-)
-
-# Combine max, min, and data for the radar chart
-radar_data <- rbind(max_values, min_values, league_averages, team_performance)
-
-# Ensure column names match for radar chart processing
-colnames(radar_data) <- colnames(max_values)
-
-# Create the radar chart
-library(fmsb)
-radarchart(
-  radar_data,
-  axistype = 1,
-  pcol = c(rgb(1, 0, 0, 0.9), rgb(0.2, 0.8, 0.2, 0.9)),  # Red for league average, green for Atlético Madrid
-  pfcol = c(rgb(1, 0, 0, 0.4), rgb(0.2, 0.8, 0.2, 0.4)),  # Semi-transparent fill
-  plwd = 2,
-  cglcol = "grey",
-  cglty = 1,
-  axislabcol = "grey",
-  caxislabels = seq(0, 100, 25),
-  cglwd = 0.8,
-  vlcex = 0.8
-)
-
-# Add a legend
-legend(
-  "topright",
-  legend = c("League Average", "Atlético Madrid"),
-  col = c(rgb(1, 0, 0, 0.9), rgb(0.2, 0.8, 0.2, 0.9)),
-  pch = 15,
-  bty = "n",
-  pt.cex = 1.5
-)
-
-# Add a title
-title("General Performance Comparison: Atlético Madrid vs League Average")
-
-
-```
-
-```{r}
-library(dplyr)
-library(fmsb)
-
-# Load team rankings
-team_rankings <- read.csv("archive/Laliga_table_2023_24.csv") %>%
-  select(name, idx)
-
-# Filter for top 7 teams
-top_teams <- team_rankings %>%
-  filter(idx <= 7) %>%
-  pull(name)
-
-# Load and filter team performance data
-team_performance <- read.csv("archive/laliga2023_34/accurate_pass_team.csv") %>%
-  select(Team, PassSuccess = PassSuccess...) %>%
-  inner_join(read.csv("archive/laliga2023_34/team_goals_per_match.csv") %>%
-               select(Team, GoalsPerMatch = GoalsperMatch), by = "Team") %>%
-  inner_join(read.csv("archive/laliga2023_34/expected_goals_team.csv") %>%
-               mutate(ExpectedGoalsPerMatch = ExpectedGoals / 38) %>%
-               select(Team, ExpectedGoalsPerMatch), by = "Team") %>%
-  inner_join(read.csv("archive/laliga2023_34/possession_percentage_team.csv") %>%
-               select(Team, Possession = Possession), by = "Team") %>%
-  inner_join(read.csv("archive/laliga2023_34/goals_conceded_team_match.csv") %>%
-               select(Team, GoalsConcededPerMatch = GoalsConcededperMatch), by = "Team") %>%
-  inner_join(read.csv("archive/laliga2023_34/expected_goals_conceded_team.csv") %>%
-               mutate(ExpectedGoalsConcededPerMatch = ExpectedGoalsConceded / 38) %>%
-               select(Team, ExpectedGoalsConcededPerMatch), by = "Team") %>%
-  inner_join(read.csv("archive/laliga2023_34/won_tackle_team.csv") %>%
-               select(Team, TackleSuccess = TackleSuccess...), by = "Team")
-
-# Ensure all columns except "Team" are numeric
-team_performance <- team_performance %>%
-  mutate(across(-Team, as.numeric))
-
-# Atlético Madrid's performance
-atletico_performance <- team_performance %>%
-  filter(Team == "Atletico Madrid") %>%
-  select(-Team) %>%
-  as.data.frame()
-
-# Average performance of Top 7 teams (including Atlético Madrid if applicable)
-top_7_avg_performance <- team_performance %>%
-  filter(Team %in% top_teams) %>%
-  select(-Team) %>%
-  summarise(across(everything(), mean, na.rm = TRUE)) %>%
-  as.data.frame()
-
-# Define max and min values
 max_values <- data.frame(
   PassSuccess = 100,
   GoalsPerMatch = 3,
@@ -359,8 +241,7 @@ min_values <- data.frame(
   TackleSuccess = 40
 )
 
-# Combine data for the radar chart
-radar_data <- rbind(max_values, min_values, top_7_avg_performance, atletico_performance)
+radar_data <- rbind(max_values, min_values, league_averages, team_performance)
 
 colnames(radar_data) <- c(
   "Pass Success (%)", 
@@ -372,39 +253,24 @@ colnames(radar_data) <- c(
   "Tackle Success (%)"
 )
 
-# Create the radar chart
 library(fmsb)
 par(mar = c(1,1, 1, 1)) # Add margin space to fit the chart and labels
 radarchart(
   radar_data,
-  axistype = 1,
-  pcol = c(rgb(0.2, 0.8, 0.2, 0.9), rgb(1, 0, 0, 0.9)),  # Green for Top 7 Average, Red for Atlético Madrid
-  pfcol = c(rgb(0.2, 0.8, 0.2, 0.4), rgb(1, 0, 0, 0.4)),  # Semi-transparent fill
+  axistype = 0,
+  pcol = c(rgb(1, 0, 0, 0.9), rgb(0.2, 0.8, 0.2, 0.9)),
+  pfcol = c(rgb(1, 0, 0, 0.4), rgb(0.2, 0.8, 0.4, 0.4)),
   plwd = 2,
   cglcol = "grey",
   cglty = 1,
-  axislabcol = "grey",
-  caxislabels = seq(0, 100, 25),
-  cglwd = 0.8,
-  vlcex = 0.8
+  cglwd = 0.9,
+  vlcex = 0.8,
+  centerzero = FALSE
 )
 
-# Add a legend
-legend(
-  "topright",
-  legend = c("Top 7 Teams (Average)", "Atlético Madrid"),
-  col = c(rgb(0.2, 0.8, 0.2, 0.9), rgb(1, 0, 0, 0.9)),
-  pch = 15,
-  bty = "n",
-  pt.cex = 1.5
-)
-
-
-
-# Add a title
-title("Performance Comparison: Atlético Madrid vs Top 7 Teams")
-
-
-
+title("General Performance Comparison: Atlético Madrid vs League Average")
 
 ```
+
+
+
