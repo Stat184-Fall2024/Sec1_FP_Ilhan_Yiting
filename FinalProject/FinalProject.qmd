@@ -14,7 +14,7 @@ The dataset used in this report, “La Liga 2023/24: Team & Player Stats,” is 
 
 # Background Information
 
-```{r formation, echo=FALSE}
+```{r formation, echo=FALSE,warning=FALSE}
 knitr::include_graphics("ATM_formation.png")
 ```
 
@@ -62,7 +62,7 @@ Although the data we have cannot fully reflect the players’ real-world perform
 
 ## Team Performance
 
-```{r xG vs. Goals Scored , echo=FALSE}
+```{r xG vs. Goals Scored , echo=FALSE,warning=FALSE}
 # Load necessary libraries
 library(ggplot2)
 library(dplyr)
@@ -107,7 +107,7 @@ print(scatter_plot)
 
 From the graph above, we can see how Atlético Madrid’s performance in expected goals (xG) and actual goals scored compares to other top teams in the 2023/24 La Liga season. The blue dots represent the predicted total goals for the season, while the red dots indicate the actual goals scored by the end of the season, and the arrows show the difference between the two. Atlético Madrid’s actual goals exceeded their xG by +6.98, demonstrating decent attacking efficiency. However, this is still significantly behind Real Madrid (+17.24) and Girona (+13.18). Barcelona’s performance was close to their xG, but they scored a total of 79 goals throughout the season, which is lower than Girona’s 85 and Real Madrid’s 87. These three teams displayed exceptional scoring abilities, with Real Madrid and Girona significantly outperforming expectations.
 
-```{r divergence-plot-xgconceded-vs-conceded, echo=FALSE}
+```{r divergence-plot-xgconceded-vs-conceded, echo=FALSE,warning=FALSE}
 # Load necessary libraries
 library(ggplot2)
 library(dplyr)
@@ -162,116 +162,8 @@ The chart above aims to compare the difference between the season’s expected g
 Atlético Madrid finished fourth, earning a Champions League berth for next season. Traditionally seen as a defensively solid team, Atlético has lost its once-formidable defense with the departures or retirements of key players like Gabi, Diego Godín, Miranda, Juanfran, and Filipe Luís, Colchoneros has left behind their once-solid defensive line and their fearsome defensive tactics that intimidated all of Europe big clubs at their now-demolished old stadium, the Calderón. Head coach Diego Simeone has also been criticized for his conservative tactics and began transitioning the team from his renowned 4-4-2 formation to a 3-5-2 starting in the 2022/23 season. However, the current squad has yet to fully adapt to this system. During the 2023/24 summer transfer window, Atlético failed to make any major defensive signings. Key defender Giménez played only 1,323 minutes throughout the season, and Witsel, brought in as reinforcement, has not returned to his pre-injury form. These factors collectively offer a partial explanation for Atlético’s defensive struggles this season.
 
 
-```{r Spider Chart, echo= FALSE}
-# Load necessary libraries
-library(dplyr)
-library(fmsb)
 
-# Load data from CSV files and calculate averages for each column
-pass_completion <- read.csv("archive/laliga2023_34/accurate_pass_team.csv") %>%
-  summarise(PassSuccess = mean(PassSuccess..., na.rm = TRUE))
-
-goals_per_game <- read.csv("archive/laliga2023_34/team_goals_per_match.csv") %>%
-  summarise(GoalsPerMatch = mean(GoalsperMatch, na.rm = TRUE))
-
-expected_goals <- read.csv("archive/laliga2023_34/expected_goals_team.csv") %>%
-  summarise(ExpectedGoalsPerMatch = mean(ExpectedGoals / 38, na.rm = TRUE))
-
-possession <- read.csv("archive/laliga2023_34/possession_percentage_team.csv") %>%
-  summarise(Possession = mean(Possession, na.rm = TRUE))
-
-goals_conceded <- read.csv("archive/laliga2023_34/goals_conceded_team_match.csv") %>%
-  summarise(GoalsConcededPerMatch = mean(GoalsConcededperMatch, na.rm = TRUE))
-
-expected_goals_against <- read.csv("archive/laliga2023_34/expected_goals_conceded_team.csv") %>%
-  summarise(ExpectedGoalsConcededPerMatch = mean(ExpectedGoalsConceded / 38, na.rm = TRUE))
-
-tackle_won <- read.csv("archive/laliga2023_34/won_tackle_team.csv") %>%
-  summarise(TackleSuccess = mean(TackleSuccess..., na.rm = TRUE))
-
-# Combine all averages into one dataframe
-league_averages <- data.frame(
-  PassSuccess = pass_completion$PassSuccess,
-  GoalsPerMatch = goals_per_game$GoalsPerMatch,
-  ExpectedGoalsPerMatch = expected_goals$ExpectedGoalsPerMatch,
-  Possession = possession$Possession,
-  GoalsConcededPerMatch = goals_conceded$GoalsConcededPerMatch,
-  ExpectedGoalsConcededPerMatch = expected_goals_against$ExpectedGoalsConcededPerMatch,
-  TackleSuccess = tackle_won$TackleSuccess
-)
-
-# Load team performance data for Atlético Madrid
-team_performance <- read.csv("archive/laliga2023_34/accurate_pass_team.csv") %>%
-  select(Team, PassSuccess = PassSuccess...) %>%
-  inner_join(read.csv("archive/laliga2023_34/team_goals_per_match.csv") %>%
-               select(Team, GoalsPerMatch = GoalsperMatch), by = "Team") %>%
-  inner_join(read.csv("archive/laliga2023_34/expected_goals_team.csv") %>%
-               mutate(ExpectedGoalsPerMatch = ExpectedGoals / 38) %>%
-               select(Team, ExpectedGoalsPerMatch), by = "Team") %>%
-  inner_join(read.csv("archive/laliga2023_34/possession_percentage_team.csv") %>%
-               select(Team, Possession = Possession), by = "Team") %>%
-  inner_join(read.csv("archive/laliga2023_34/goals_conceded_team_match.csv") %>%
-               select(Team, GoalsConcededPerMatch = GoalsConcededperMatch), by = "Team") %>%
-  inner_join(read.csv("archive/laliga2023_34/expected_goals_conceded_team.csv") %>%
-               mutate(ExpectedGoalsConcededPerMatch = ExpectedGoalsConceded / 38) %>%
-               select(Team, ExpectedGoalsConcededPerMatch), by = "Team") %>%
-  inner_join(read.csv("archive/laliga2023_34/won_tackle_team.csv") %>%
-               select(Team, TackleSuccess = TackleSuccess...), by = "Team") %>%
-  filter(Team == "Atletico Madrid") %>%
-  select(-Team) %>%
-  as.data.frame()
-
-max_values <- data.frame(
-  PassSuccess = 100,
-  GoalsPerMatch = 3,
-  ExpectedGoalsPerMatch = 3,
-  Possession = 55,
-  GoalsConcededPerMatch = 3,
-  ExpectedGoalsConcededPerMatch = 3,
-  TackleSuccess = 70
-)
-
-min_values <- data.frame(
-  PassSuccess = 70,
-  GoalsPerMatch = 1,
-  ExpectedGoalsPerMatch = 1,
-  Possession = 45,
-  GoalsConcededPerMatch = 1,
-  ExpectedGoalsConcededPerMatch = 1,
-  TackleSuccess = 40
-)
-
-radar_data <- rbind(max_values, min_values, league_averages, team_performance)
-
-colnames(radar_data) <- c(
-  "Pass Success (%)", 
-  "XG per Match", 
-  "XG", 
-  "Possession(%)", 
-  "GD per Match", 
-  "XGD", 
-  "Tackle Success (%)"
-)
-
-library(fmsb)
-par(mar = c(1,1, 1, 1)) # Add margin space to fit the chart and labels
-radarchart(
-  radar_data,
-  axistype = 0,
-  pcol = c(rgb(1, 0, 0, 0.9), rgb(0.2, 0.8, 0.2, 0.9)),
-  pfcol = c(rgb(1, 0, 0, 0.4), rgb(0.2, 0.8, 0.4, 0.4)),
-  plwd = 2,
-  cglcol = "grey",
-  cglty = 1,
-  cglwd = 0.9,
-  vlcex = 0.8,
-  centerzero = FALSE
-)
-
-title("General Performance Comparison: Atlético Madrid vs League Average")
-
-```
-```{r}
+```{r, echo=FALSE,warning=FALSE}
 library(dplyr)
 library(fmsb)
 
@@ -284,27 +176,73 @@ top_teams <- team_rankings %>%
   filter(idx <= 7) %>%
   pull(name)
 
-# Load and filter team performance data
-team_performance <- read.csv("archive/laliga2023_34/accurate_pass_team.csv") %>%
-  select(Team, PassSuccess = PassSuccess...) %>%
-  inner_join(read.csv("archive/laliga2023_34/team_goals_per_match.csv") %>%
-               select(Team, GoalsPerMatch = GoalsperMatch), by = "Team") %>%
-  inner_join(read.csv("archive/laliga2023_34/expected_goals_team.csv") %>%
-               mutate(ExpectedGoalsPerMatch = ExpectedGoals / 38) %>%
-               select(Team, ExpectedGoalsPerMatch), by = "Team") %>%
-  inner_join(read.csv("archive/laliga2023_34/possession_percentage_team.csv") %>%
-               select(Team, Possession = Possession), by = "Team") %>%
-  inner_join(read.csv("archive/laliga2023_34/goals_conceded_team_match.csv") %>%
-               select(Team, GoalsConcededPerMatch = GoalsConcededperMatch), by = "Team") %>%
-  inner_join(read.csv("archive/laliga2023_34/expected_goals_conceded_team.csv") %>%
-               mutate(ExpectedGoalsConcededPerMatch = ExpectedGoalsConceded / 38) %>%
-               select(Team, ExpectedGoalsConcededPerMatch), by = "Team") %>%
-  inner_join(read.csv("archive/laliga2023_34/won_tackle_team.csv") %>%
-               select(Team, TackleSuccess = TackleSuccess...), by = "Team")
+# Function to standardize team names
+standardize_team_names <- function(df, col_name) {
+  df %>%
+    mutate(!!sym(col_name) := case_when(
+      !!sym(col_name) == "Atlético Madrid" ~ "Atletico Madrid",
+      TRUE ~ !!sym(col_name)
+    ))
+}
+
+# Load and filter team performance data for attacking metrics
+team_performance <- read.csv("archive/laliga2023_34/ontarget_scoring_att_team.csv") %>%
+  standardize_team_names("Team") %>%
+  select(Team, ShotsOnTarget = ShotsonTargetperMatch) %>%
+  inner_join(
+    read.csv("archive/laliga2023_34/team_goals_per_match.csv") %>%
+      standardize_team_names("Team") %>%
+      select(Team, GoalsPerMatch = GoalsperMatch),
+    by = "Team"
+  ) %>%
+  inner_join(
+    read.csv("archive/laliga2023_34/accurate_pass_team.csv") %>%
+      standardize_team_names("Team") %>%
+      select(Team, PassCompletionRatio = PassSuccess...),
+    by = "Team"
+  ) %>%
+  inner_join(
+    read.csv("archive/laliga2023_34/accurate_cross_team.csv") %>%
+      standardize_team_names("Team") %>%
+      select(Team, CrossCompletion = CrossSuccess...),
+    by = "Team"
+  ) %>%
+  inner_join(
+    read.csv("archive/laliga2023_34/expected_goals_team.csv") %>%
+      standardize_team_names("Team") %>%
+      select(Team, NonPenaltyExpectedGoals = ExpectedGoals),
+    by = "Team"
+  ) %>%
+  inner_join(
+    read.csv("archive/laliga2023_34/big_chance_team.csv") %>%
+      standardize_team_names("Team") %>%
+      select(Team, BigChances = BigChances),
+    by = "Team"
+  ) %>%
+  inner_join(
+    read.csv("archive/LaLiga_TeamAndPlayer/la_liga_team_shooting.csv") %>%
+      standardize_team_names("Squad") %>%
+      rename(Team = Squad) %>%
+      select(Team, ShotsTotal = Sh_Standard),
+    by = "Team"
+  ) %>%
+  inner_join(
+    read.csv("archive/LaLiga_TeamAndPlayer/la_liga_team_passing_types.csv") %>%
+      standardize_team_names("Squad") %>%
+      rename(Team = Squad) %>%
+      select(Team, CrossesCompleted = Crs_Pass),
+    team_performance,
+    by = "Team",
+    relationship = "many-to-many"
+  )
 
 # Ensure all columns except "Team" are numeric
 team_performance <- team_performance %>%
   mutate(across(-Team, as.numeric))
+
+# Remove duplicates to ensure "Atletico Madrid" appears only once
+team_performance <- team_performance %>%
+  distinct(Team, .keep_all = TRUE)
 
 # Atlético Madrid's performance
 atletico_performance <- team_performance %>%
@@ -312,50 +250,53 @@ atletico_performance <- team_performance %>%
   select(-Team) %>%
   as.data.frame()
 
-# Average performance of Top 7 teams (including Atlético Madrid if applicable)
+# Average performance of Top 7 Teams excluding Atlético Madrid
 top_7_avg_performance <- team_performance %>%
-  filter(Team %in% top_teams) %>%
+  filter(Team %in% top_teams & Team != "Atletico Madrid") %>%  # Exclude Atlético Madrid
   select(-Team) %>%
   summarise(across(everything(), mean, na.rm = TRUE)) %>%
   as.data.frame()
 
 # Define max and min values
 max_values <- data.frame(
-  PassSuccess = 100,
+  ShotsOnTarget = 7,
   GoalsPerMatch = 3,
-  ExpectedGoalsPerMatch = 3,
-  Possession = 55,
-  GoalsConcededPerMatch = 3,
-  ExpectedGoalsConcededPerMatch = 3,
-  TackleSuccess = 70
+  PassCompletionRatio = 100,
+  CrossCompletion = 50,
+  NonPenaltyExpectedGoals = 100,
+  BigChances = 150,
+  ShotsTotal = 600,
+  CrossesCompleted = 1000
 )
 
 min_values <- data.frame(
-  PassSuccess = 70,
+  ShotsOnTarget = 1,
   GoalsPerMatch = 1,
-  ExpectedGoalsPerMatch = 1,
-  Possession = 45,
-  GoalsConcededPerMatch = 1,
-  ExpectedGoalsConcededPerMatch = 1,
-  TackleSuccess = 40
+  PassCompletionRatio = 70,
+  CrossCompletion = 20,
+  NonPenaltyExpectedGoals = 0,
+  BigChances = 0,
+  ShotsTotal = 200,
+  CrossesCompleted = 300
 )
 
 # Combine data for the radar chart
 radar_data <- rbind(max_values, min_values, top_7_avg_performance, atletico_performance)
 
 colnames(radar_data) <- c(
-  "Pass Success (%)", 
-  "XG per Match", 
-  "XG", 
-  "Possession(%)", 
-  "GD per Match", 
-  "XGD", 
-  "Tackle Success (%)"
+  "Shots On Target", 
+  "Goals Per Match", 
+  "Pass Completion Ratio (%)", 
+  "Cross Completion (%)", 
+  "Non-Penalty XG", 
+  "Big Chances Created", 
+  "Shots Total",
+  "Crosses Completed"
 )
 
 # Create the radar chart
 library(fmsb)
-par(mar = c(1,1, 1, 1)) # Add margin space to fit the chart and labels
+par(mar = c(1, 1, 1, 1)) # Adjust margins to fit the chart and labels
 radarchart(
   radar_data,
   axistype = 0,
@@ -366,7 +307,7 @@ radarchart(
   cglty = 1,
   axislabcol = "grey",
   caxislabels = NULL,
-  cglwd = 0.8,
+  cglwd = 0.6,
   vlcex = 0.8
 )
 
@@ -380,12 +321,356 @@ legend(
   pt.cex = 1.5
 )
 
-
-
 # Add a title
-title("Performance Comparison: Atlético Madrid vs Top 7 Teams")
-
+title("Attacking Performance: Atlético Madrid vs Top 7 Teams")
 
 ```
+Based on the spider chart analysis, it clearly indicates the struggles of Atletico Madrid’s attacking performance in the 23/24 season compared to the top 7 teams (which it is a part of), but the data of Atletico Madrid is not included in the top 7 teams. Breaking it down, this chart actually reveals deeper tactical insights that can explain the underwhelming results faced by the club. For starters, we can see that the total area of the chart of Atletico Madrid is smaller than the top 7 teams meaning there can be arguments that the Attacking side of Atletico Madrid is a contributing factor to the lower performance by the club.
+
+Key Analysis Broken Down : 
+
+Goals Per Match and Non-Penalty XG (Expected Goals)
+
+Atletico Madrid is clearly shown to be falling behind in these metrics which proves their struggle to convert big chances created into goals. The lower value of Non-Penalty XG indicates that not enough quality of scoring attempts have been demonstrated by the club. This could be potentially due to ineffective movement in the attacking phase of Atletico or lack of creativity to break down the defenses of opponents.
+
+Big Chances Created 
+
+Atletico Madrid has a similar value of big chances created while compared to the average of the top 7 teams in the league. That means that Atletico Madrid has the potential and does create big chances occasionally but as we can see from key analysis number (1), these chances are not seen converted to goals. This also proves that Atletico Madrid has a struggle in the final third of the field or adapting to defensive setups of the opposing side. For a team that has been historically known for their style of play of counterattacks and exploiting space this is a worrying sign.
+
+Shots Total and Shots On Target
+
+While also not far behind in these values compared to the top 7, it is still slightly below average showing that they are not going above and beyond in shooting execution. While they are still taking a handful of shots, the quality of these shots taken/shots on target might not be up to par as reflected on key analysis number (1), which is low Non-Penalty XG.
+
+Cross Completion (%) and Crosses Completed
+
+Crossing has always been a weapon and a style of play of Atlecio, but during the 23/24 season crossing is shown to have the most gap in the spider chart here. Their completion rate is below average. The deduction is that their players are not in the optimal positions possibly due to lack of coordination during the attacking phase to coordinate off-ball movement.
+
+Pass Completion Ratio (%)
+
+Also below average, this shows that Atletico is a bit sloppy on controlling the game compared to the top 7 teams. This makes Atletico’s build-up play harder to sustain especially in the attacking half, a part they used to historically excel in.
 
 
+
+
+
+```{r,echo=FALSE, warning=FALSE}
+
+library(dplyr)
+library(fmsb)
+
+# Load team rankings
+team_rankings <- read.csv("archive/Laliga_table_2023_24.csv") %>%
+  select(name, idx)
+
+# Filter for top 7 teams
+top_teams <- team_rankings %>%
+  filter(idx <= 7) %>%
+  pull(name)
+
+# Load and clean la_liga_team_defense.csv data
+team_defense <- read.csv("archive/LaLiga_TeamAndPlayer/la_liga_team_defense.csv") %>%
+  filter(Season_End_Year == 2024, Team_or_Opponent == "team") %>%
+  rename(
+    Team = Squad,
+    Tackles = Tkl_Tackles,
+    TacklesWon = TklW_Tackles,
+    Challenges = Tkl_Challenges,
+    ChallengesLost = Lost_Challenges,
+    Blocks = Blocks_Blocks,
+    Interceptions = Int
+  )
+
+# Load and clean Off_Outcomes data from la_liga_passing_types.csv
+passing_types <- read.csv("archive/LaLiga_TeamAndPlayer/la_liga_team_passing_types.csv") %>%
+  filter(Season_End_Year == 2024, Team_or_Opponent == "opponent") %>%
+  select(Squad, Off_Outcomes) %>%
+  rename(Team = Squad, OffsidesAgainst = Off_Outcomes)
+
+# Standardize team names
+team_defense <- team_defense %>%
+  mutate(Team = case_when(
+    Team == "Atlético Madrid" ~ "Atletico Madrid",
+    TRUE ~ Team
+  ))
+
+passing_types <- passing_types %>%
+  mutate(Team = case_when(
+    Team == "Atlético Madrid" ~ "Atletico Madrid",
+    TRUE ~ Team
+  ))
+
+# Merge defensive stats and OffsidesAgainst data
+team_stats <- team_defense %>%
+  left_join(passing_types, by = "Team")
+
+# Defensive Performance for Atlético Madrid
+atletico_performance <- team_stats %>%
+  filter(Team == "Atletico Madrid") %>%
+  select(-Team) %>%
+  as.data.frame()
+
+# Average performance for Top 7 teams excluding Atlético Madrid
+top_7_avg_performance <- team_stats %>%
+  filter(Team %in% top_teams & Team != "Atletico Madrid") %>%
+  summarise(across(everything(), mean, na.rm = TRUE)) %>%
+  as.data.frame()
+
+# Define max and min values for radar chart
+max_values <- data.frame(
+  Tackles = 700, TacklesWon = 500, Challenges = 400,
+  ChallengesLost = 400, Blocks = 500, Interceptions = 400, OffsidesAgainst = 200
+)
+
+min_values <- data.frame(
+  Tackles = 500, TacklesWon = 290, Challenges = 200,
+  ChallengesLost = 200, Blocks = 300, Interceptions = 200, OffsidesAgainst = 0
+)
+
+# Ensure column order
+col_order <- c("Tackles", "TacklesWon", "Challenges", "ChallengesLost", "Blocks", "Interceptions", "OffsidesAgainst")
+max_values <- max_values[col_order]
+min_values <- min_values[col_order]
+top_7_avg_performance <- top_7_avg_performance[col_order]
+atletico_performance <- atletico_performance[col_order]
+
+# Combine data for radar chart
+radar_data <- rbind(max_values, min_values, top_7_avg_performance, atletico_performance)
+
+# Rename columns
+colnames(radar_data) <- c("Tackles", "Tackles Won", "Challenges", "Challenges Lost", 
+                          "Blocks", "Interceptions", "Offsides Against")
+
+# Create radar chart
+par(mar = c(1, 1, 1, 1))
+radarchart(
+  radar_data,
+  axistype = 0,
+  pcol = c(rgb(0.2, 0.8, 0.2, 0.9), rgb(1, 0, 0, 0.9)),
+  pfcol = c(rgb(0.2, 0.8, 0.2, 0.4), rgb(1, 0, 0, 0.4)),
+  plwd = 2,
+  cglcol = "grey", cglty = 1, cglwd = 0.6,
+  vlcex = 0.8
+)
+
+# Add legend
+legend("topright",
+       legend = c("Top 7 Teams (Average)", "Atlético Madrid"),
+       col = c(rgb(0.2, 0.8, 0.2, 0.9), rgb(1, 0, 0, 0.9)),
+       pch = 15, bty = "n", pt.cex = 1.5)
+
+# Add title
+title("Defensive Performance: Atlético Madrid vs Top 7 Teams (2024)")
+```
+
+This chart compares Atlético Madrid’s defensive performance with the average of the other top seven teams in La Liga for the 2024 season. Overall, Atlético Madrid exceeds the average of the top seven teams in most defensive metrics, but they underperform in certain areas. Atlético Madrid stands out in tackles, successful tackles, blocks, and challenge attempts. However, they have lost a significant number of duels and failed to make enough interceptions.
+
+Simeone’s use of the two wing-backs in the 3-5-2 formation is particularly aggressive. In this setup, the wing-backs are required to provide width and advance the attack, while also retreating quickly to cover the flanks defensively. When the wing-backs push too far forward, other players must compensate, which exposes gaps in the backline—particularly against fast and counterattacking teams. Even when they manage to get back into position, wing-backs frequently face one-on-one situations against opposing wingers. Among Atlético’s four wing-backs, only Molina is a natural wing-back. Riquelme, for example, was an attacking midfielder when on loan at Girona in the 2022/23 season. Lino played as a left winger for Valencia last season, and Llorente has been converted from a defensive midfielder into a box-to-box midfielder, right midfielder, and wing-back. While versatile and productive, Llorente lacks the defensive expertise of a traditional wing-back. Atlético also ranks third in dribblers challenged, the analysis above explains the reason behind their high challenge attempts but low success rate.
+
+Atletico Madrid's poor interception performance is primarily due to the aging defensive line. With limited mobility and slower reaction speed, the team struggles to maintain high-intensity mid-block pressing. Effective pressing requires quick responses and high stamina, but an aging backline cannot sustain this pressure over long periods, leading to gaps and mistakes. Low interception numbers typically indicate deeper defensive positioning, where players wait for opponents to enter the defensive zone instead of pressing proactively. The older defenders lack the physical speed and anticipation required for quick interceptions. This low block defensive approach can also be seen in the Offsides_Against statistic. Teams that adopt a high defensive line and press high up the pitch typically force more offsides, whereas teams defending deeper have fewer offsides against them.
+
+One particularly interesting statistic is that Atlético Madrid has the highest number of passes blocked in La Liga. Two main reasons may explain this:
+	1.	The defensive line is often forced into passive defending, where players rely on positioning to block passing lanes rather than stepping up to intercept or tackle.
+	2.	The slower movement of the backline prevents them from pressing forward effectively, leaving blocking as the most viable defensive strategy. Atlético excels at blocking passes near the edge of the penalty area and in deep defensive zones, rather than applying high-pressing interceptions. Additionally, opposing teams frequently use a crossing strategy against Atlético. This season, Atlético Madrid has faced 764 crosses, far more than Real Madrid’s 682 and Barcelona’s 574. One reason Atlético performs well in this category may be their ability to successfully defend crosses. However, this hypothesis would require further analysis of individual player performance data to confirm.
+
+
+```{r,echo=FALSE,warning=FALSE}
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+# Load team rankings
+team_rankings <- read.csv("archive/Laliga_table_2023_24.csv") %>%
+  select(name, idx)
+
+# Filter for Top 7 teams
+top_teams <- team_rankings %>%
+  filter(idx <= 7) %>%
+  pull(name)
+
+# Load and clean la_liga_team_defense.csv data
+team_defense <- read.csv("archive/LaLiga_TeamAndPlayer/la_liga_team_defense.csv") %>%
+  filter(Team_or_Opponent == "team", Season_End_Year == 2024) %>% 
+  rename(
+    Team = Squad,
+    Def3rd_Tackles = Def.3rd_Tackles,
+    Mid3rd_Tackles = Mid.3rd_Tackles,
+    Att3rd_Tackles = Att.3rd_Tackles
+  )
+
+# Load and clean la_liga_team_possession.csv data
+team_possession <- read.csv("archive/LaLiga_TeamAndPlayer/la_liga_team_possession.csv") %>%
+  filter(Team_or_Opponent == "opponent", Season_End_Year == 2024) %>%
+  rename(
+    Team = Squad,
+    Opp_Possession = Poss
+  )
+
+# Standardize team names
+team_defense <- team_defense %>%
+  mutate(Team = ifelse(Team == "Atlético Madrid", "Atletico Madrid", Team))
+
+team_possession <- team_possession %>%
+  mutate(Team = ifelse(Team == "Atlético Madrid", "Atletico Madrid", Team))
+
+# Merge data
+top_7_stats <- team_defense %>%
+  filter(Team %in% top_teams) %>%
+  left_join(team_possession %>% select(Team, Opp_Possession), by = "Team")
+
+# Reshape tackle data to long format
+top_7_tackles_long <- top_7_stats %>%
+  pivot_longer(cols = c(Def3rd_Tackles, Mid3rd_Tackles, Att3rd_Tackles),
+               names_to = "Tackle_Zone",
+               values_to = "Tackles")
+
+# Explicitly set factor levels for Tackle_Zone to control order
+top_7_tackles_long$Tackle_Zone <- factor(top_7_tackles_long$Tackle_Zone, 
+                                         levels = c("Def3rd_Tackles", "Mid3rd_Tackles", "Att3rd_Tackles"))
+
+# Plot dual-axis chart with black possession line
+ggplot() +
+  # Stacked bar plot for tackles
+  geom_bar(data = top_7_tackles_long, 
+           aes(x = Team, y = Tackles, fill = Tackle_Zone), 
+           stat = "identity", position = "stack") +
+  # Line plot for possession (ensure group = 1 to connect points)
+  geom_line(data = top_7_stats, 
+            aes(x = Team, y = Opp_Possession * 10, group = 1), 
+            color = "black", size = 1.2) +
+  geom_point(data = top_7_stats, 
+             aes(x = Team, y = Opp_Possession * 10), 
+             color = "black", size = 3) +
+  # Primary and secondary y-axis
+  scale_y_continuous(
+    name = "Number of Tackles (Stacked)",
+    sec.axis = sec_axis(~ . / 10, name = "Opponent Possession (%)")
+  ) +
+  # Custom fill colors for bars
+  scale_fill_manual(values = c("Def3rd_Tackles" = "lightblue", 
+                               "Mid3rd_Tackles" = "skyblue", 
+                               "Att3rd_Tackles" = "dodgerblue")) +
+  # Labels and title
+  labs(title = "Tackles by Zone and Opponent Possession for Top 7 Teams in La Liga",
+       x = "Team",
+       fill = "Tackle Zone") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        legend.position = "top")
+```
+
+```{r, echo=FALSE,warning=FALSE}
+# Load necessary libraries
+library(dplyr)
+library(fmsb)
+
+# Load team rankings
+team_rankings <- read.csv("archive/Laliga_table_2023_24.csv") %>%
+  select(name, idx)
+
+# Filter for Top 7 teams
+top_teams <- team_rankings %>%
+  filter(idx <= 7) %>%
+  pull(name)
+
+# Load and clean la_liga_team_passing_types.csv data
+team_passing <- read.csv("archive/LaLiga_TeamAndPlayer/la_liga_team_passing_types.csv") %>%
+  filter(Team_or_Opponent == "team", Season_End_Year == 2024) %>% # Filter for 'Team' and 2024
+  rename(
+    Team = Squad,
+    LivePass = Live_Pass,
+    ThroughBalls = TB_Pass,
+    Crosses = Crs_Pass,
+    Switches = Sw_Pass,
+    OffsideOutcomes = Off_Outcomes,
+    BlockedOutcomes = Blocks_Outcomes
+  )
+
+# Standardize team names
+team_passing <- team_passing %>%
+  mutate(Team = case_when(
+    Team == "Atlético Madrid" ~ "Atletico Madrid",
+    TRUE ~ Team
+  ))
+
+# Filter for Atlético Madrid's performance
+atletico_performance <- team_passing %>%
+  filter(Team == "Atletico Madrid") %>%
+  select(-Team) %>%
+  as.data.frame()
+
+# Calculate average performance of Top 7 teams excluding Atlético Madrid
+top_7_avg_performance <- team_passing %>%
+  filter(Team %in% top_teams & Team != "Atletico Madrid") %>%
+  select(-Team) %>%
+  summarise(across(everything(), mean, na.rm = TRUE)) %>%
+  as.data.frame()
+
+# Define max and min values for radar chart
+max_values <- data.frame(
+  LivePass = 23000,
+  ThroughBalls = 100,
+  Crosses = 1000,
+  Switches = 230,
+  OffsideOutcomes = 150,
+  BlockedOutcomes = 400
+)
+
+min_values <- data.frame(
+  LivePass = 12000,
+  ThroughBalls = 15,
+  Crosses = 50,
+  Switches = 550,
+  OffsideOutcomes = 60,
+  BlockedOutcomes = 250
+)
+
+# Ensure column names and order match for all data frames
+col_order <- c("LivePass", "ThroughBalls", "Crosses", "Switches", "OffsideOutcomes", "BlockedOutcomes")
+
+max_values <- max_values[col_order]
+min_values <- min_values[col_order]
+top_7_avg_performance <- top_7_avg_performance[col_order]
+atletico_performance <- atletico_performance[col_order]
+
+# Combine data for the radar chart
+radar_data <- rbind(max_values, min_values, top_7_avg_performance, atletico_performance)
+
+# Rename columns for readability
+colnames(radar_data) <- c(
+  "Live Passes", 
+  "Through Balls", 
+  "Crosses", 
+  "Switches", 
+  "Offside Outcomes", 
+  "Blocked Outcomes"
+)
+
+# Create radar chart
+par(mar = c(1, 1, 1, 1)) # Adjust margins to fit the chart and labels
+radarchart(
+  radar_data,
+  axistype = 0,
+  pcol = c(rgb(0.2, 0.8, 0.2, 0.9), rgb(1, 0, 0, 0.9)), # Green = Top 7 Avg, Red = Atlético Madrid
+  pfcol = c(rgb(0.2, 0.8, 0.2, 0.4), rgb(1, 0, 0, 0.4)), # Semi-transparent fill
+  plwd = 2,
+  cglcol = "grey",
+  cglty = 1,
+  cglwd = 0.6,
+  vlcex = 0.8
+)
+
+# Add a legend
+legend(
+  "topright",
+  legend = c("Top 7 Teams (Average)", "Atlético Madrid"),
+  col = c(rgb(0.2, 0.8, 0.2, 0.9), rgb(1, 0, 0, 0.9)),
+  pch = 15,
+  bty = "n",
+  pt.cex = 1.5
+)
+
+# Add a title
+title("Passing Performance: Atlético Madrid vs Top 7 Teams (2024)")
+
+```
