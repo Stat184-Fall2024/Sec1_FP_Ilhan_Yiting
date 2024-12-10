@@ -271,6 +271,121 @@ radarchart(
 title("General Performance Comparison: Atlético Madrid vs League Average")
 
 ```
+```{r}
+library(dplyr)
+library(fmsb)
 
+# Load team rankings
+team_rankings <- read.csv("archive/Laliga_table_2023_24.csv") %>%
+  select(name, idx)
+
+# Filter for top 7 teams
+top_teams <- team_rankings %>%
+  filter(idx <= 7) %>%
+  pull(name)
+
+# Load and filter team performance data
+team_performance <- read.csv("archive/laliga2023_34/accurate_pass_team.csv") %>%
+  select(Team, PassSuccess = PassSuccess...) %>%
+  inner_join(read.csv("archive/laliga2023_34/team_goals_per_match.csv") %>%
+               select(Team, GoalsPerMatch = GoalsperMatch), by = "Team") %>%
+  inner_join(read.csv("archive/laliga2023_34/expected_goals_team.csv") %>%
+               mutate(ExpectedGoalsPerMatch = ExpectedGoals / 38) %>%
+               select(Team, ExpectedGoalsPerMatch), by = "Team") %>%
+  inner_join(read.csv("archive/laliga2023_34/possession_percentage_team.csv") %>%
+               select(Team, Possession = Possession), by = "Team") %>%
+  inner_join(read.csv("archive/laliga2023_34/goals_conceded_team_match.csv") %>%
+               select(Team, GoalsConcededPerMatch = GoalsConcededperMatch), by = "Team") %>%
+  inner_join(read.csv("archive/laliga2023_34/expected_goals_conceded_team.csv") %>%
+               mutate(ExpectedGoalsConcededPerMatch = ExpectedGoalsConceded / 38) %>%
+               select(Team, ExpectedGoalsConcededPerMatch), by = "Team") %>%
+  inner_join(read.csv("archive/laliga2023_34/won_tackle_team.csv") %>%
+               select(Team, TackleSuccess = TackleSuccess...), by = "Team")
+
+# Ensure all columns except "Team" are numeric
+team_performance <- team_performance %>%
+  mutate(across(-Team, as.numeric))
+
+# Atlético Madrid's performance
+atletico_performance <- team_performance %>%
+  filter(Team == "Atletico Madrid") %>%
+  select(-Team) %>%
+  as.data.frame()
+
+# Average performance of Top 7 teams (including Atlético Madrid if applicable)
+top_7_avg_performance <- team_performance %>%
+  filter(Team %in% top_teams) %>%
+  select(-Team) %>%
+  summarise(across(everything(), mean, na.rm = TRUE)) %>%
+  as.data.frame()
+
+# Define max and min values
+max_values <- data.frame(
+  PassSuccess = 100,
+  GoalsPerMatch = 3,
+  ExpectedGoalsPerMatch = 3,
+  Possession = 55,
+  GoalsConcededPerMatch = 3,
+  ExpectedGoalsConcededPerMatch = 3,
+  TackleSuccess = 70
+)
+
+min_values <- data.frame(
+  PassSuccess = 70,
+  GoalsPerMatch = 1,
+  ExpectedGoalsPerMatch = 1,
+  Possession = 45,
+  GoalsConcededPerMatch = 1,
+  ExpectedGoalsConcededPerMatch = 1,
+  TackleSuccess = 40
+)
+
+# Combine data for the radar chart
+radar_data <- rbind(max_values, min_values, top_7_avg_performance, atletico_performance)
+
+colnames(radar_data) <- c(
+  "Pass Success (%)", 
+  "XG per Match", 
+  "XG", 
+  "Possession(%)", 
+  "GD per Match", 
+  "XGD", 
+  "Tackle Success (%)"
+)
+
+# Create the radar chart
+library(fmsb)
+par(mar = c(1,1, 1, 1)) # Add margin space to fit the chart and labels
+radarchart(
+  radar_data,
+  axistype = 0,
+  pcol = c(rgb(0.2, 0.8, 0.2, 0.9), rgb(1, 0, 0, 0.9)),  # Green for Top 7 Average, Red for Atlético Madrid
+  pfcol = c(rgb(0.2, 0.8, 0.2, 0.4), rgb(1, 0, 0, 0.4)),  # Semi-transparent fill
+  plwd = 2,
+  cglcol = "grey",
+  cglty = 1,
+  axislabcol = "grey",
+  caxislabels = NULL,
+  cglwd = 0.8,
+  vlcex = 0.8
+)
+
+# Add a legend
+legend(
+  "topright",
+  legend = c("Top 7 Teams (Average)", "Atlético Madrid"),
+  col = c(rgb(0.2, 0.8, 0.2, 0.9), rgb(1, 0, 0, 0.9)),
+  pch = 15,
+  bty = "n",
+  pt.cex = 1.5
+)
+
+
+
+# Add a title
+title("Performance Comparison: Atlético Madrid vs Top 7 Teams")
+
+
+```
 
 
