@@ -1,16 +1,25 @@
 ---
 title: "Atletico Madrid season 23/24 team performance analysis"
-format: html
+format: 
+  html:
+    theme: cosmo
+    fontsize: 12pt
+    linestretch: 1.5
+    mainfont: "Times New Roman"
 editor: visual
 ---
 
-# Atletico Madrid season 23/24 team performance analysis
+```{r setup, echo=FALSE,include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+# Introduction
 
 In the past thirteen years of La Liga, Atlético Madrid has been regarded as a strong title contender. Despite the dominance of Spain’s two traditional big clubs, Barcelona and Real Madrid, Los Colchoneros managed to break their monopoly and win the league title twice, they were seen this way because of their recent history in the league. The reason is that Atlético has been the only team to consistently challenge Real Madrid and Barcelona over the last decade. Since the 2014/15 season, Atlético Madrid’s league standings have never dropped below third place. However, in the 2023/24 season, their performance plummeted drastically, finishing fourth in the league.
 
 In this report, I will analyze player and team data to answer one question: What caused Atlético Madrid’s poor performance last season? To uncover useful insights, I will explore various attributes across different dimensions. For team performance metrics, I will examine data on accurate passes, crosses, goals conceded, interceptions, and other relevant statistics that reflect overall team effectiveness. Player performance metrics will focus on individual contributions, including expected goals (xG), assists, clearances, fouls committed, and tackles won. Additionally, match-specific insights will provide detailed information on goals scored, scoring attempts, possession percentages, and cards issued per match. By combining these metrics, I aim to identify the factors behind Atlético Madrid’s performance last season.
 
-The dataset used in this report, “La Liga 2023/24: Team & Player Stats,” is hosted on Kaggle, a platform for sharing open data. It was collected and organized by user Whispering Kahuna using data sourced from FotMob, a proprietary platform for football statistics. All copyrights for the original data belong to FotMob, and this dataset is a restricted collection of publicly viewable data and does not claim ownership of FotMob’s data.
+The dataset used in this report, “La Liga 2023/24: Team & Player Stats,” is hosted on Kaggle, a platform for sharing open data. It was collected and organized by user Whispering Kahuna using data sourced from FotMob, a proprietary platform for football statistics. All copyrights for the original data belong to FotMob, and this dataset is a restricted collection of publicly viewable data and does not claim ownership of FotMob’s data. Additionally, this report uses detailed team performance data for **Atlético Madrid** from FBref, a widely recognized platform for football analytics and statistics. The FBref datasets include team metrics such as **shooting, passing, passing types, possession, and defensive statistics** for the **2023-2024 La Liga season**. FBref’s data is publicly accessible and compiled from various professional football sources, providing comprehensive insights into team and player performances.
 
 # Background Information
 
@@ -42,15 +51,13 @@ knitr::include_graphics("Tactic.png")
 
 In the screenshot, we observe only four Atltico Madrid players in their half besides the defenders: one right wing-back and three central players, one of whom is a forward. This raises the question: where are the other midfielders and the left wing-back? And why is a forward, whose primary role is traditionally to score, positioned in midfield instead of the attacking third? This 2D diagram replicates the off-ball movements from an earlier match situation. The absence of the left wing-back and another midfielder suggests they are likely positioned higher up the pitch, possibly providing width and vertical depth in the attacking third. The forward dropping into midfield reflects tactical flexibility—likely to overload central areas, create passing lanes, or help progress the ball against an organized press. Such movements are characteristic of Atlético’s dynamic approach, where players frequently interchange roles to exploit spatial and numerical advantages during transitions.
 
-Atletico Madrid’s star player and all-time top scorer, Antoine Griezmann, plays as a deep-lying forward. In modern football, players are often assigned multiple roles, but here we focus solely on the distinct role tailored to his strengths. Both a Trequartista and a deep-lying forward are tasked with scoring and playmaking, but their priorities differ. A Trequartista primarily looks for shooting opportunities behind the center-forward, with playmaking as a secondary responsibility. In contrast, a deep-lying forward’s primary role is to drop into deeper spaces, hold up the ball, distribute it wide or back to organize play, and create opportunities for both frontline players and advancing teammates, with scoring being a secondary task. This role demands exceptional football intelligence, off-ball movement, and playmaking skills. Griezmann, after transitioning to this role, has adapted perfectly to its demands. At Atlético Madrid, he often drops even deeper than a typical deep-lying forward, effectively becoming the team’s offensive orchestrator, seamlessly blending his creativity with his ability to link play.\
-
-The forwards Morata and Memphis, who partner with Griezmann, play as the team’s most advanced attackers. They have the ability to hold up the ball with their back to goal and often position themselves alongside the last defender to receive passes played behind the defensive line. Most of the time, they stay in central areas to attract defenders. Correa, acting as a super sub, possesses excellent footwork typical of South American players. However, due to a previous heart surgery, his playing time is somewhat limited.
+Atletico Madrid’s star player and all-time top scorer, Antoine Griezmann, plays as a deep-lying forward. In modern football, players are often assigned multiple roles, but here we focus solely on the distinct role tailored to his strengths. Both a Trequartista and a deep-lying forward are tasked with scoring and playmaking, but their priorities differ. A Trequartista primarily looks for shooting opportunities behind the center-forward, with playmaking as a secondary responsibility. In contrast, a deep-lying forward’s primary role is to drop into deeper spaces, hold up the ball, distribute it wide or back to organize play, and create opportunities for both frontline players and advancing teammates, with scoring being a secondary task. This role demands exceptional football intelligence, off-ball movement, and playmaking skills. Griezmann, after transitioning to this role, has adapted perfectly to its demands. At Atlético Madrid, he often drops even deeper than a typical deep-lying forward, effectively becoming the team’s offensive orchestrator, seamlessly blending his creativity with his ability to link play.
 
 As shown in the image, when the deep-lying forward drops into midfield to receive the ball and organize play, he frees up a midfielder to make forward runs—in this case, number 14, Marcos Llorente. With good speed and versatility, Llorente primarily operates in the wide areas, connecting midfield with the attacking and defensive zones. Functioning like a box-to-box midfielder, he actively moves between the two penalty areas, often overlapping on the right flank to combine with Molina, taking turns to exploit spaces in the half-space. Number 5, Rodrigo De Paul, who is adept at orchestrating the right-side attack on his own, provides cover for Llorente’s advanced position. Meanwhile, Griezmann takes over De Paul’s role on the left, organizing play from that side. On the left flank, number 12, wing-back Lino, pushes up into a left winger’s position to add width and attacking options. Right wing-back Molina stays deeper to maintain the balance between attack and defense. Atlético Madrid emphasizes defensive stability while adjusting the number of players pushing forward based on the opponent’s defensive structure and pressing intensity during off-ball phases. This careful modulation ensures both security and flexibility in their tactical setup.
 
 In Atletico Madrid’s setup, aside from the number 6 role, the other two midfielders frequently push forward depending on the situation. These midfielders adapt dynamically to exploit attacking opportunities, often making forward runs into advanced positions or supporting wide players. Their movement adds unpredictability and overloads specific areas of the pitch, creating threats through overlapping runs, combination play, or penetrating the opponent’s defensive lines. This flexibility is key to linking midfield with attack, maintaining fluidity, and ensuring the team can quickly transition between defense and offense.
 
-```{r defense, echo=FALSE}
+```{r defense, echo=FALSE,warning=FALSE}
 knitr::include_graphics("Defense.png")
 ```
 
@@ -64,80 +71,78 @@ Although the data we have cannot fully reflect the players’ real-world perform
 
 ## Team Performance
 
-```{r xG vs. Goals Scored , echo=FALSE,warning=FALSE}
-# Load necessary libraries
+In this section we will explore the data on Atletico Madrid's performance as a team.
+
+```{r, echo=FALSE,warning=FALSE,warning=FALSE}
 library(ggplot2)
 library(dplyr)
 library(tidyr)
-library(cowplot)
 
-# Load the data
 laliga_xg <- read.csv("archive/Laliga_table_xg_2023_24.csv")
 laliga_table <- read.csv("archive/Laliga_table_2023_24.csv")
 
-# Prepare the data
+team_rankings <- laliga_table %>%
+  select(name, idx) # Select team names and their ranks
+
+top_teams <- team_rankings %>%
+  filter(idx <= 7) %>% # Filter for top 7 teams
+  pull(name)           # Extract only the team names
+
 laliga_table <- laliga_table %>%
   separate(scoresStr, into = c("goalsScored", "goalsConceded"), sep = "-", convert = TRUE)
 
 merged_data <- laliga_xg %>%
   inner_join(laliga_table, by = c("name", "played")) %>%
-  filter(idx.x <= 6) # Filter top 5 teams
+  filter(name %in% top_teams) # Use top 7 teams only
 
-# Scatter plot with arrows for xG vs. Goals Scored and automatic legend
 scatter_plot <- ggplot(merged_data) +
-  geom_point(aes(x = xg, y = goalsScored, color = "Actual Goals Scored"), size = 4) + # Actual goals scored
-  geom_point(aes(x = xg, y = xg, color = "Expected Goals (xG)"), size = 4) + # Expected goals
+  geom_point(aes(x = xg, y = goalsScored, color = "Actual Goals Scored"), size = 4) + 
+  geom_point(aes(x = xg, y = xg, color = "Expected Goals (xG)"), size = 4) + 
   geom_segment(aes(x = xg, y = xg, xend = xg, yend = goalsScored, linetype = "Difference"), 
-               arrow = arrow(length = unit(0.3, "cm")), size = 1.2, color = "black") + # Arrow for difference
-  geom_text(aes(x = xg, y = goalsScored, label = name), vjust = -1, size = 3) + # Team names
+               arrow = arrow(length = unit(0.3, "cm")), size = 1.2, color = "black") + 
+  geom_text(aes(x = xg, y = goalsScored, label = name), vjust = -1, size = 3) + 
   labs(
     title = "Comparison of Expected Goals (xG) and Actual Goals Scored in La Liga 2023/24",
-    subtitle = "Relationship between Expected and Actual Goals for the top 5 teams",
+    subtitle = "Relationship between Expected and Actual Goals for the Top 7 Teams",
     x = "Expected Goals (xG)",
     y = "Goals Scored",
-    color = NULL,      # Remove the word "Legend" for color
-    linetype = NULL     # Remove the word "Legend" for line type
+    color = NULL,
+    linetype = NULL
   ) +
   scale_color_manual(values = c("Actual Goals Scored" = "red", "Expected Goals (xG)" = "blue")) +
   scale_linetype_manual(values = c("Difference" = "solid")) +
-  xlim(35, 80) + # Adjust x-axis range to provide more space
+  xlim(35, 80) + 
   theme_minimal()
 
-# Display the scatter plot with the adjusted x-axis
 print(scatter_plot)
+
 ```
 
 From the graph above, we can see how Atlético Madrid’s performance in expected goals (xG) and actual goals scored compares to other top teams in the 2023/24 La Liga season. The blue dots represent the predicted total goals for the season, while the red dots indicate the actual goals scored by the end of the season, and the arrows show the difference between the two. Atlético Madrid’s actual goals exceeded their xG by +6.98, demonstrating decent attacking efficiency. However, this is still significantly behind Real Madrid (+17.24) and Girona (+13.18). Barcelona’s performance was close to their xG, but they scored a total of 79 goals throughout the season, which is lower than Girona’s 85 and Real Madrid’s 87. These three teams displayed exceptional scoring abilities, with Real Madrid and Girona significantly outperforming expectations.
 
-```{r divergence-plot-xgconceded-vs-conceded, echo=FALSE,warning=FALSE}
-# Load necessary libraries
-library(ggplot2)
-library(dplyr)
-library(tidyr)
+```{r, echo=FALSE,warning=FALSE}
 
-# Load the data
 laliga_xg <- read.csv("archive/Laliga_table_xg_2023_24.csv")
 laliga_table <- read.csv("archive/Laliga_table_2023_24.csv")
 
-# Prepare the La Liga table data
 laliga_table <- laliga_table %>%
   separate(scoresStr, into = c("goalsScored", "goalsConceded"), sep = "-", convert = TRUE) # Extract actual goals scored and conceded
 
-# Get the top 7 teams based on points
-top_teams <- laliga_table %>%
-  arrange(desc(pts)) %>% # Sort by points in descending order
-  mutate(rank = row_number()) %>% # Assign rank based on points
-  slice(1:7) # Select the top 7 teams
 
-# Merge the xG data with the top 7 teams
+top_teams <- laliga_table %>%
+  arrange(desc(pts)) %>% 
+  mutate(rank = row_number()) %>%
+  slice(1:7) 
+
+
 merged_data <- laliga_xg %>%
-  inner_join(top_teams, by = c("name", "played")) %>% # Merge on team name and matches played
+  inner_join(top_teams, by = c("name", "played")) %>% 
   mutate(
     name_with_rank = paste0(rank, ". ", name), # Combine rank with team name
     conceded_diff = xgConceded - as.numeric(goalsConceded) # Calculate difference between xGConceded and actual goals conceded
   )
 
-# Create the divergence plot for xGConceded vs. Goals Conceded
+# Create the divergence plot 
 divergence_plot <- ggplot(merged_data, aes(x = reorder(name_with_rank, conceded_diff), y = conceded_diff, fill = conceded_diff > 0)) +
   geom_bar(stat = "identity", width = 0.6) +
   geom_text(aes(label = round(conceded_diff, 2)), vjust = ifelse(merged_data$conceded_diff > 0, -0.5, 1.5), size = 3) +
@@ -155,28 +160,27 @@ divergence_plot <- ggplot(merged_data, aes(x = reorder(name_with_rank, conceded_
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-# Display the divergence plot
 print(divergence_plot)
 ```
 
-The chart above aims to compare the difference between the season’s expected goals conceded (as predicted by the media) and the actual goals conceded. Blue indicates teams that conceded fewer goals than predicted, while red represents teams that underperformed expectations. As shown, Real Madrid performed exceptionally well this season, which is why they secured the league title four rounds early, claiming their 36th La Liga championship. Girona emerged as the dark horse of the season, far exceeding expectations. In the 2022/23 season, they finished 10th, but in 2023/24, they climbed to 3rd place in the league. Since the 2014/15 season, La Liga’s top three spots had been dominated by Real Madrid, Barcelona, or Atlético Madrid, making Girona the only club to break this record. Barcelona’s defense struggled with severe injuries, as key defenders Araújo and left-back Balde were sidelined for extended periods, leading to inconsistent defensive performances. Athletic Bilbao and Real Sociedad secured Europa League spots, conceding fewer goals than the media predicted.
+The chart above aims to compare the difference between the season’s expected goals conceded and the actual goals conceded. Blue indicates teams that conceded fewer goals than predicted, while red represents teams that underperformed expectations. As shown, Real Madrid performed exceptionally well this season, which is why they secured the league title four rounds early, claiming their 36th La Liga championship. Girona emerged as the dark horse of the season, far exceeding expectations. In the 2022/23 season, they finished 10th, but in 2023/24, they climbed to 3rd place in the league. Since the 2014/15 season, La Liga’s top three spots had been dominated by Real Madrid, Barcelona, or Atlético Madrid, making Girona the only club to break this record. Barcelona’s defense struggled with severe injuries, as key defenders Araújo and left-back Balde were sidelined for extended periods, leading to inconsistent defensive performances. Athletic Bilbao and Real Sociedad secured Europa League spots, conceding fewer goals than the media predicted.
 
 Atlético Madrid finished fourth, earning a Champions League berth for next season. Traditionally seen as a defensively solid team, Atlético has lost its once-formidable defense with the departures or retirements of key players like Gabi, Diego Godín, Miranda, Juanfran, and Filipe Luís, Colchoneros has left behind their once-solid defensive line and their fearsome defensive tactics that intimidated all of Europe big clubs at their now-demolished old stadium, the Calderón. Head coach Diego Simeone has also been criticized for his conservative tactics and began transitioning the team from his renowned 4-4-2 formation to a 3-5-2 starting in the 2022/23 season. However, the current squad has yet to fully adapt to this system. During the 2023/24 summer transfer window, Atlético failed to make any major defensive signings. Key defender Giménez played only 1,323 minutes throughout the season, and Witsel, brought in as reinforcement, has not returned to his pre-injury form. These factors collectively offer a partial explanation for Atlético’s defensive struggles this season.
 
 ```{r, echo=FALSE,warning=FALSE}
-library(dplyr)
+
 library(fmsb)
 
-# Load team rankings
+
 team_rankings <- read.csv("archive/Laliga_table_2023_24.csv") %>%
   select(name, idx)
 
-# Filter for top 7 teams
+
 top_teams <- team_rankings %>%
   filter(idx <= 7) %>%
   pull(name)
 
-# Function to standardize team names
+
 standardize_team_names <- function(df, col_name) {
   df %>%
     mutate(!!sym(col_name) := case_when(
@@ -185,7 +189,7 @@ standardize_team_names <- function(df, col_name) {
     ))
 }
 
-# Load and filter team performance data for attacking metrics
+
 team_performance <- read.csv("archive/laliga2023_34/ontarget_scoring_att_team.csv") %>%
   standardize_team_names("Team") %>%
   select(Team, ShotsOnTarget = ShotsonTargetperMatch) %>%
@@ -352,19 +356,16 @@ Also below average, this shows that Atletico is a bit sloppy on controlling the 
 
 ```{r,echo=FALSE, warning=FALSE}
 
-library(dplyr)
-library(fmsb)
 
-# Load team rankings
 team_rankings <- read.csv("archive/Laliga_table_2023_24.csv") %>%
   select(name, idx)
 
-# Filter for top 7 teams
+
 top_teams <- team_rankings %>%
   filter(idx <= 7) %>%
   pull(name)
 
-# Load and clean la_liga_team_defense.csv data
+
 team_defense <- read.csv("archive/LaLiga_TeamAndPlayer/la_liga_team_defense.csv") %>%
   filter(Season_End_Year == 2024, Team_or_Opponent == "team") %>%
   rename(
@@ -468,21 +469,17 @@ Atletico Madrid's poor interception performance is primarily due to the aging de
 One particularly interesting statistic is that Atlético Madrid has the highest number of passes blocked in La Liga. Two main reasons may explain this: 1. The defensive line is often forced into passive defending, where players rely on positioning to block passing lanes rather than stepping up to intercept or tackle. 2. The slower movement of the backline prevents them from pressing forward effectively, leaving blocking as the most viable defensive strategy. Atlético excels at blocking passes near the edge of the penalty area and in deep defensive zones, rather than applying high-pressing interceptions. Additionally, opposing teams frequently use a crossing strategy against Atlético. This season, Atlético Madrid has faced 764 crosses, far more than Real Madrid’s 682 and Barcelona’s 574. One reason Atlético performs well in this category may be their ability to successfully defend crosses. However, this hypothesis would require further analysis of individual player performance data to confirm.
 
 ```{r,echo=FALSE,warning=FALSE}
-# Load necessary libraries
-library(dplyr)
-library(ggplot2)
-library(tidyr)
 
-# Load team rankings
+
+
 team_rankings <- read.csv("archive/Laliga_table_2023_24.csv") %>%
   select(name, idx)
 
-# Filter for Top 7 teams
 top_teams <- team_rankings %>%
   filter(idx <= 7) %>%
   pull(name)
 
-# Load and clean la_liga_team_defense.csv data
+
 team_defense <- read.csv("archive/LaLiga_TeamAndPlayer/la_liga_team_defense.csv") %>%
   filter(Team_or_Opponent == "team", Season_End_Year == 2024) %>% 
   rename(
@@ -492,7 +489,6 @@ team_defense <- read.csv("archive/LaLiga_TeamAndPlayer/la_liga_team_defense.csv"
     Att3rd_Tackles = Att.3rd_Tackles
   )
 
-# Load and clean la_liga_team_possession.csv data
 team_possession <- read.csv("archive/LaLiga_TeamAndPlayer/la_liga_team_possession.csv") %>%
   filter(Team_or_Opponent == "opponent", Season_End_Year == 2024) %>%
   rename(
@@ -522,13 +518,13 @@ top_7_tackles_long <- top_7_stats %>%
 top_7_tackles_long$Tackle_Zone <- factor(top_7_tackles_long$Tackle_Zone, 
                                          levels = c("Def3rd_Tackles", "Mid3rd_Tackles", "Att3rd_Tackles"))
 
-# Plot dual-axis chart with black possession line
+
 ggplot() +
   # Stacked bar plot for tackles
   geom_bar(data = top_7_tackles_long, 
            aes(x = Team, y = Tackles, fill = Tackle_Zone), 
            stat = "identity", position = "stack") +
-  # Line plot for possession (ensure group = 1 to connect points)
+
   geom_line(data = top_7_stats, 
             aes(x = Team, y = Opp_Possession * 10, group = 1), 
             color = "black", size = 1.2) +
@@ -540,11 +536,9 @@ ggplot() +
     name = "Number of Tackles (Stacked)",
     sec.axis = sec_axis(~ . / 10, name = "Opponent Possession (%)")
   ) +
-  # Custom fill colors for bars
   scale_fill_manual(values = c("Def3rd_Tackles" = "lightblue", 
                                "Mid3rd_Tackles" = "skyblue", 
                                "Att3rd_Tackles" = "dodgerblue")) +
-  # Labels and title
   labs(title = "Tackles by Zone and Opponent Possession for Top 7 Teams in La Liga",
        x = "Team",
        fill = "Tackle Zone") +
@@ -553,21 +547,17 @@ ggplot() +
         legend.position = "top")
 ```
 
-```{r, echo=FALSE,warning=FALSE}
-# Load necessary libraries
-library(dplyr)
-library(fmsb)
+From this chart, we can clearly see Atlético Madrid’s defensive characteristics during the 2024 season. The chart uses segmented bar graphs to show the number of tackles made by the top seven teams in La Liga across different zones: defensive third (Def3rd_Tackles), midfield third (Mid3rd_Tackles), and attacking third (Att3rd_Tackles), with the black line representing the opponent’s possession percentage. Atlético Madrid’s total number of tackles is relatively high, particularly in the defensive and midfield thirds, aligning with their mid-block pressing strategy. They tend to allow opponents to hold possession, relying on tight positional defense to capitalize on mistakes and launch quick counterattacks. This approach explains why their tackles are concentrated in deeper areas rather than the attacking third. Additionally, Atlético’s high opponent possession percentage reflects defensive challenges stemming from their deeper defensive shape and an aging backline, which struggles to sustain high-intensity pressing. In contrast, Barcelona’s data stands out due to their tactical style. Barcelona emphasizes possession, controlling the tempo of the game with high ball retention, which naturally results in fewer tackles compared to other teams. This difference highlights the tactical contrast between Atlético Madrid’s focus on defensive solidity and counterattacks and Barcelona’s possession-based control.
 
-# Load team rankings
+```{r, echo=FALSE,warning=FALSE}
+
 team_rankings <- read.csv("archive/Laliga_table_2023_24.csv") %>%
   select(name, idx)
 
-# Filter for Top 7 teams
 top_teams <- team_rankings %>%
   filter(idx <= 7) %>%
   pull(name)
 
-# Load and clean la_liga_team_passing_types.csv data
 team_passing <- read.csv("archive/LaLiga_TeamAndPlayer/la_liga_team_passing_types.csv") %>%
   filter(Team_or_Opponent == "team", Season_End_Year == 2024) %>% # Filter for 'Team' and 2024
   rename(
@@ -580,27 +570,23 @@ team_passing <- read.csv("archive/LaLiga_TeamAndPlayer/la_liga_team_passing_type
     BlockedOutcomes = Blocks_Outcomes
   )
 
-# Standardize team names
 team_passing <- team_passing %>%
   mutate(Team = case_when(
     Team == "Atlético Madrid" ~ "Atletico Madrid",
     TRUE ~ Team
   ))
 
-# Filter for Atlético Madrid's performance
 atletico_performance <- team_passing %>%
   filter(Team == "Atletico Madrid") %>%
   select(-Team) %>%
   as.data.frame()
 
-# Calculate average performance of Top 7 teams excluding Atlético Madrid
 top_7_avg_performance <- team_passing %>%
   filter(Team %in% top_teams & Team != "Atletico Madrid") %>%
   select(-Team) %>%
   summarise(across(everything(), mean, na.rm = TRUE)) %>%
   as.data.frame()
 
-# Define max and min values for radar chart
 max_values <- data.frame(
   LivePass = 23000,
   ThroughBalls = 100,
@@ -619,7 +605,6 @@ min_values <- data.frame(
   BlockedOutcomes = 250
 )
 
-# Ensure column names and order match for all data frames
 col_order <- c("LivePass", "ThroughBalls", "Crosses", "Switches", "OffsideOutcomes", "BlockedOutcomes")
 
 max_values <- max_values[col_order]
@@ -627,10 +612,8 @@ min_values <- min_values[col_order]
 top_7_avg_performance <- top_7_avg_performance[col_order]
 atletico_performance <- atletico_performance[col_order]
 
-# Combine data for the radar chart
 radar_data <- rbind(max_values, min_values, top_7_avg_performance, atletico_performance)
 
-# Rename columns for readability
 colnames(radar_data) <- c(
   "Live Passes", 
   "Through Balls", 
@@ -640,13 +623,12 @@ colnames(radar_data) <- c(
   "Blocked Outcomes"
 )
 
-# Create radar chart
-par(mar = c(1, 1, 1, 1)) # Adjust margins to fit the chart and labels
+par(mar = c(1, 1, 1, 1)) 
 radarchart(
   radar_data,
   axistype = 0,
-  pcol = c(rgb(0.2, 0.8, 0.2, 0.9), rgb(1, 0, 0, 0.9)), # Green = Top 7 Avg, Red = Atlético Madrid
-  pfcol = c(rgb(0.2, 0.8, 0.2, 0.4), rgb(1, 0, 0, 0.4)), # Semi-transparent fill
+  pcol = c(rgb(0.2, 0.8, 0.2, 0.9), rgb(1, 0, 0, 0.9)),  
+  pfcol = c(rgb(0.2, 0.8, 0.2, 0.4), rgb(1, 0, 0, 0.4)), 
   plwd = 2,
   cglcol = "grey",
   cglty = 1,
@@ -654,7 +636,6 @@ radarchart(
   vlcex = 0.8
 )
 
-# Add a legend
 legend(
   "topright",
   legend = c("Top 7 Teams (Average)", "Atlético Madrid"),
@@ -664,7 +645,48 @@ legend(
   pt.cex = 1.5
 )
 
-# Add a title
+
 title("Passing Performance: Atlético Madrid vs Top 7 Teams (2024)")
 
 ```
+
+From this radar chart, we can see that Atlético Madrid's passing performance stands out compared to the average of the top seven teams in La Liga, which aligns with their tactical approach. The red dashed lines and shaded areas indicate Atlético's performance, while the green solid lines and shaded areas show the average performance of the top teams. By comparing the two, several key trends emerge regarding Atlético's passing style.
+
+Atlético's offside outcomes are significantly higher than the average, largely due to their reliance on quick, direct passes to break through the opponent's defensive line with through balls. However, this also exposes a lack of effective off-the-ball movement and coordination among their forwards, resulting in frequent offsides and wasted scoring chances.
+
+Blocked passes are slightly above average, indicating Atlético's preference for riskier, more direct passes over safe, possession-oriented ones. While this aggressive style can be effective, it also increases the likelihood of interceptions.
+
+In the switches category, Atlético performs well below average, showing they rarely use long-range horizontal passes to reorganize attacks. Instead, they prioritize pushing the ball forward quickly, which reflects their low-block defensive approach and counterattacking strategy. This tactical style focuses on efficiency and rapid progression rather than spreading the play patiently across the field.
+
+Interestingly, Atlético Madrid’s performance in crosses, while seemingly balanced with through balls, actually falls below the average of the top seven La Liga teams. This reveals a key issue in their attacking play. In Simeone’s 3-5-2 formation, wing-backs are vital—they are responsible for providing width and creating opportunities with crosses into the box. However, on the left flank, Samuel Lino, as an inverted wing-back, often cuts inside onto his stronger right foot, significantly reducing the volume of traditional crosses from that side. On the right, while Nahuel Molina and Marcos Llorente shoulder more responsibility for crossing, their output still remains underwhelming, highlighting a broader struggle in Atlético’s wing play.
+
+In a 3-5-2 system, wing-backs are crucial to breaking down compact defenses. When central areas become overcrowded, effective crosses from wide positions can stretch the opposition, creating space for forwards and midfielders to exploit. A lack of consistent crossing, both in frequency and quality, often indicates underperformance from the wing-backs, leaving the team overly reliant on central play. This makes their attack predictable and easier for opponents to defend.
+
+For Atlético, this issue is particularly apparent. Lino’s tendency to cut inside limits left-side crossing opportunities, while Molina and Llorente’s contributions on the right, though more active, remain below the league average. This imbalance reduces Atlético’s ability to fully utilize the width of the pitch, making it harder to break down defenses and diminishing the impact of their wing-backs in Simeone’s system.
+
+Overall, the success of a 3-5-2 formation relies heavily on wing-backs delivering high-quality crosses to maintain attacking width and create chances. For a team like Atlético Madrid, which depends on defensive solidity and counterattacking play, the underperformance of their wing-backs in crossing has become a clear weakness. Improving both the frequency and accuracy of their deliveries will be essential to unlocking the full potential of their tactical setup and increasing their attacking threat.
+
+
+# Conclusion
+
+In conclusion, Atlético Madrid’s 2023/24 season felt like peeling a tactical onion—layer after layer of problems, from underperforming wing-backs and lackluster progression in the attacking third to wasted chances and an aging, creaky defense. What once looked like a sturdy 3-5-2 system slowly unraveled, exposing vulnerabilities that dragged Simeone’s warriors down to a humbling fourth place. The iconic “Cholismo” resilience? More like a leaky bucket struggling to hold water.
+
+But don’t count Atlético out just yet! The summer transfer window brought a glimmer of hope, as the club went shopping like they meant business, plugging holes with precision. Enter Alvarez, the most expensive signing of the La Liga summer, who brings fantastic finishing and the kind of passing composure that screams, “Finally, someone who knows how to shoot the goal into the net!” Up front, Sørloth, the La Liga silver boot winner, arrives with the sole purpose of making defenders miserable and ensuring those missed chances from last season become goals. And let’s not forget Le Normand, the freshly crowned European Champion, brought in to add some much-needed steel and calmness to Atlético’s backline. Our analysis nailed it—poor ball progression, an inefficient frontline, and a shaky defense were the culprits. Atlético’s new signings? The perfect antidote.
+
+In a way, Atlético’s summer moves are like giving Simeone a shiny new Swiss Army knife. The tools are there—now it’s up to him to cut through the competition. Will these signings be enough to resurrect Atlético’s title dreams and break the duopoly of Real Madrid and Barcelona? Only time will tell. But one thing’s for sure: with Alvarez’s elegance, Sørloth’s goals, and Le Normand’s defensive heroics, Atlético Madrid might just be back to ruffling feathers and breaking hearts. After all, in football, nothing’s more entertaining than a team that hits rock bottom, reloads, and comes back swinging.
+
+## References
+
+1.  [FBref. (2024). *Atlético Madrid Stats: La Liga 2023-2024 - Shooting Statistics*.](https://fbref.com/en/squads/db3b9613/2023-2024/c12/Atletico-Madrid-Stats-La-Liga#all_stats_shooting)
+
+2.  [FBref. (2024). *Atlético Madrid Stats: La Liga 2023-2024 - Passing Statistics*.](https://fbref.com/en/squads/db3b9613/2023-2024/c12/Atletico-Madrid-Stats-La-Liga#all_stats_passing)
+
+3.  [FBref. (2024). *Atlético Madrid Stats: La Liga 2023-2024 - Passing Types*.](https://fbref.com/en/squads/db3b9613/2023-2024/c12/Atletico-Madrid-Stats-La-Liga#all_stats_passing_types)
+
+4.  [FBref. (2024). *Atlético Madrid Stats: La Liga 2023-2024 - Possession Statistics*.](https://fbref.com/en/squads/db3b9613/2023-2024/c12/Atletico-Madrid-Stats-La-Liga#all_stats_possession)
+
+5.  [FBref. (2024). *Atlético Madrid Stats: La Liga 2023-2024 - Defensive Statistics*.](https://fbref.com/en/squads/db3b9613/2023-2024/c12/Atletico-Madrid-Stats-La-Liga#all_stats_defense)
+
+6.  [WhisperingKahuna. (2024). *La Liga 2023-24: Players and Team Insights*. Kaggle.](https://www.kaggle.com/datasets/whisperingkahuna/la-liga-202324-players-and-team-insights/data)
+
+7.  [CBS Sports Golazo. (2024). *Atlético Madrid vs. Inter: Extended Highlights \| UCL Round of 16 2nd Leg* \[Video, Scene at 2:30\]. YouTube.](https://www.youtube.com/watch?v=Z-F6bPAyJY0&t=270s)
